@@ -4,13 +4,10 @@ import UmrahPackages from "@/components/UmrahPackages";
 import HajjPackage from "@/components/HajjPackage";
 import UpcomingTours from "@/components/UpcomingTours";
 import HotelsSection from "@/components/HotelsSection";
-import GallerySection from "@/components/GallerySection";
-import BlogSection from "@/components/BlogSection";
-import TeamSection from "@/components/TeamSection";
 import FAQSection from "@/components/FAQSection";
-import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import GallerySection from "@/components/GallerySection";
 
 const Index = () => {
   return (
@@ -21,11 +18,8 @@ const Index = () => {
       <HajjPackage />
       <UpcomingTours />
       <HotelsSection />
-      <GallerySection />
-      <BlogSection />
-      <TeamSection />
+      <GallerySection limit={6} />
       <FAQSection />
-      <ContactSection />
       <Footer />
       <WhatsAppButton />
     </div>

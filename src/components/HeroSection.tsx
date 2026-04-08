@@ -23,7 +23,7 @@ const HeroSection = () => {
           <Button size="lg" className="bg-primary text-primary-foreground hover:bg-secondary text-base px-8">
             <a href="#umrah">View Packages</a>
           </Button>
-          <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10 text-base px-8">
+          <Button size="lg" variant="outline" className="border-green-600 text-green-600 hover:bg-green-600 hover:text-white text-base px-8">
             Book Now
           </Button>
         </div>

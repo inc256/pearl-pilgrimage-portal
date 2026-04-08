@@ -14,7 +14,13 @@ const images = [
   { src: galleryArafat, alt: "Mount Arafat" },
 ];
 
-const GallerySection = () => {
+interface GallerySectionProps {
+  limit?: number;
+}
+
+const GallerySection = ({ limit }: GallerySectionProps) => {
+  const displayImages = limit ? images.slice(0, limit) : images;
+
   return (
     <section id="gallery" className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -24,7 +30,7 @@ const GallerySection = () => {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-5xl mx-auto">
-          {images.map((img, i) => (
+          {displayImages.map((img, i) => (
             <div key={i} className="aspect-square overflow-hidden rounded-lg">
               <img
                 src={img.src}

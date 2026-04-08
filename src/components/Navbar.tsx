@@ -1,16 +1,17 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const navLinks = [
-  { label: "Hajj", href: "#hajj" },
-  { label: "Umrah", href: "#umrah" },
-  { label: "Hotels", href: "#hotels" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "Blogs", href: "#blog" },
-  { label: "About Us", href: "#about" },
-  { label: "Contact Us", href: "#contact" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Home", href: "/" },
+  { label: "Hajj", href: "/hajj" },
+  { label: "Umrah", href: "/umrah" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Blogs", href: "/blogs" },
+  { label: "About Us", href: "/about" },
+  { label: "Contact Us", href: "/contact" },
+  { label: "FAQ", href: "/faq" },
 ];
 
 const Navbar = () => {
@@ -19,20 +20,20 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="container mx-auto px-4 flex items-center justify-between h-16 lg:h-20">
-        <a href="#" className="font-heading text-lg lg:text-xl font-bold text-primary">
-          Pearl Hijja
-        </a>
+        <Link to="/" className="font-heading text-lg lg:text-xl font-bold text-primary">
+          Pearl Hijja & Umra
+        </Link>
 
         {/* Desktop nav */}
         <div className="hidden lg:flex items-center gap-6">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.label}
-              href={link.href}
+              to={link.href}
               className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -40,7 +41,7 @@ const Navbar = () => {
           <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
             Client Portal
           </Button>
-          <Button size="sm" className="bg-primary text-primary-foreground hover:bg-secondary">
+          <Button size="sm" className="bg-green-600 text-white hover:bg-green-700">
             Book Now
           </Button>
         </div>
@@ -55,20 +56,20 @@ const Navbar = () => {
       {open && (
         <div className="lg:hidden bg-background border-b border-border px-4 pb-4">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.label}
-              href={link.href}
+              to={link.href}
               onClick={() => setOpen(false)}
               className="block py-2 text-sm font-medium text-foreground/70 hover:text-primary transition-colors"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
           <div className="flex gap-3 mt-4">
             <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground flex-1">
               Client Portal
             </Button>
-            <Button size="sm" className="bg-primary text-primary-foreground hover:bg-secondary flex-1">
+            <Button size="sm" className="bg-green-600 text-white hover:bg-green-700 flex-1">
               Book Now
             </Button>
           </div>
