@@ -54,7 +54,7 @@ const Contact = () => {
                     <label className="text-sm font-medium text-foreground mb-2 block">Message</label>
                     <Textarea placeholder="Your message..." rows={5} className="w-full" />
                   </div>
-                  <Button type="submit" className="w-full bg-green-600 text-white hover:bg-green-700">
+                  <Button type="submit" className="w-full bg-[#5C0120] text-white hover:bg-[#4a0019]">
                     Send Message
                   </Button>
                 </form>

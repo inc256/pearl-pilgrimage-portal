@@ -70,7 +70,7 @@ const Blogs = () => {
                   </div>
                   <h3 className="font-heading text-lg font-semibold text-foreground mb-2">{article.title}</h3>
                   <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{article.excerpt}</p>
-                  <Button variant="ghost" size="sm" className="text-primary hover:text-green-700 p-0">
+                  <Button variant="ghost" size="sm" className="text-primary hover:text-[#4a0019] p-0">
                     Read More <ArrowRight size={16} className="ml-1" />
                   </Button>
                 </div>

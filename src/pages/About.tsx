@@ -33,7 +33,7 @@ const About = () => {
                   With years of experience in organizing Hajj and Umrah trips, we have helped thousands of pilgrims from around the world perform their sacred duties with ease, comfort, and peace of mind.
                 </p>
                 <Link to="/contact">
-                  <Button className="bg-green-600 text-white hover:bg-green-700">
+                  <Button className="bg-[#5C0120] text-white hover:bg-[#4a0019]">
                     Contact Us
                   </Button>
                 </Link>
@@ -120,14 +120,14 @@ const About = () => {
                   "Airport transfers and ground transportation included"
                 ].map((item, index) => (
                   <div key={index} className="flex items-center gap-3 p-4 bg-card rounded-lg border border-border">
-                    <Check className="text-green-600 shrink-0" size={20} />
+                    <Check className="text-[#5C0120] shrink-0" size={20} />
                     <span className="text-foreground">{item}</span>
                   </div>
                 ))}
               </div>
               <div className="text-center mt-10">
                 <Link to="/packages">
-                  <Button className="bg-green-600 text-white hover:bg-green-700">
+                  <Button className="bg-[#5C0120] text-white hover:bg-[#4a0019]">
                     Explore Our Packages
                   </Button>
                 </Link>

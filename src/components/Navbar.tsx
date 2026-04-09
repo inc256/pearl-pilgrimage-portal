@@ -41,7 +41,7 @@ const Navbar = () => {
           <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
             Client Portal
           </Button>
-          <Button size="sm" className="bg-green-600 text-white hover:bg-green-700">
+          <Button size="sm" className="bg-[#5C0120] text-white hover:bg-[#4a0019]">
             Book Now
           </Button>
         </div>
@@ -69,7 +69,7 @@ const Navbar = () => {
             <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground flex-1">
               Client Portal
             </Button>
-            <Button size="sm" className="bg-green-600 text-white hover:bg-green-700 flex-1">
+            <Button size="sm" className="bg-[#5C0120] text-white hover:bg-[#4a0019] flex-1">
               Book Now
             </Button>
           </div>

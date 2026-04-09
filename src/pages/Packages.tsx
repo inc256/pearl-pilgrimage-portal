@@ -64,7 +64,7 @@ const Packages = () => {
                     ))}
                   </ul>
                   <Link to={pkg.link}>
-                    <Button className="w-full bg-green-600 text-white hover:bg-green-700">
+                    <Button className="w-full bg-[#5C0120] text-white hover:bg-[#4a0019]">
                       View Details <ArrowRight size={16} className="ml-2" />
                     </Button>
                   </Link>

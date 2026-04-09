@@ -146,7 +146,7 @@ const Hajj = () => {
                         </span>
                       ))}
                     </div>
-                    <Button size="lg" className="bg-green-600 text-white hover:bg-green-700 whitespace-nowrap">
+                    <Button size="lg" className="bg-[#5C0120] text-white hover:bg-[#4a0019] whitespace-nowrap">
                       Book Now
                     </Button>
                   </div>

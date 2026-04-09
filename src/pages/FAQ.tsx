@@ -195,12 +195,12 @@ const FAQ = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link to="/contact">
-                  <Button className="bg-green-600 text-white hover:bg-green-700">
+                  <Button className="bg-[#5C0120] text-white hover:bg-[#4a0019]">
                     Contact Us
                   </Button>
                 </Link>
                 <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" className="border-green-600 text-green-600 hover:bg-green-600 hover:text-white">
+                  <Button variant="outline" className="border-[#5C0120] text-[#5C0120] hover:bg-[#5C0120] hover:text-white">
                     <MessageCircle className="mr-2" size={18} />
                     Chat on WhatsApp
                   </Button>
