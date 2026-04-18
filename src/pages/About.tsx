@@ -3,8 +3,42 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Check, Award, Heart, Users, Shield, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAboutUs } from "@/hooks/useSupabase";
 
 const About = () => {
+  const { data: aboutSections, isLoading, error } = useAboutUs();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="pt-20 flex items-center justify-center min-h-[50vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading about us...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="pt-20 flex items-center justify-center min-h-[50vh]">
+          <div className="text-center">
+            <p className="text-red-500">Error loading about us. Please try again later.</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const storySection = aboutSections?.find(section => section.section === 'story');
+  const valuesSection = aboutSections?.find(section => section.section === 'values');
+  const featuresSection = aboutSections?.find(section => section.section === 'features');
+
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -26,12 +60,22 @@ const About = () => {
             <div className="grid md:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
               <div>
                 <h2 className="font-heading text-3xl font-bold text-foreground mb-6">Our Story</h2>
-                <p className="text-muted-foreground mb-4 leading-relaxed">
-                  Pearl Pilgrimage was established with a singular mission: to provide premium pilgrimage services that allow Muslims to focus on their spiritual journey without worrying about logistics.
-                </p>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  With years of experience in organizing Hajj and Umrah trips, we have helped thousands of pilgrims from around the world perform their sacred duties with ease, comfort, and peace of mind.
-                </p>
+                {storySection?.content ? (
+                  <div className="text-muted-foreground leading-relaxed space-y-4">
+                    {storySection.content.split('\n\n').map((paragraph, index) => (
+                      <p key={index}>{paragraph}</p>
+                    ))}
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-muted-foreground mb-4 leading-relaxed">
+                      Pearl Pilgrimage was established with a singular mission: to provide premium pilgrimage services that allow Muslims to focus on their spiritual journey without worrying about logistics.
+                    </p>
+                    <p className="text-muted-foreground mb-6 leading-relaxed">
+                      With years of experience in organizing Hajj and Umrah trips, we have helped thousands of pilgrims from around the world perform their sacred duties with ease, comfort, and peace of mind.
+                    </p>
+                  </>
+                )}
                 <Link to="/contact">
                   <Button className="bg-[#5C0120] text-white hover:bg-[#4a0019]">
                     Contact Us

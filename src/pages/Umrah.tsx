@@ -2,8 +2,10 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Plane, Hotel, Bus, Calendar, Utensils, Check } from "lucide-react";
+import { useUmrahPackages } from "@/hooks/useSupabase";
+import { transformPackageForDisplay, DisplayPackage } from "@/lib/packageUtils";
 
-const umrahPackages = [
+const fallbackUmrahPackages = [
   {
     title: "Umrah VIP Package",
     price: "$5,800",
@@ -17,7 +19,10 @@ const umrahPackages = [
       "Personal guide services",
       "Airport VIP assistance",
       "Breakfast & dinner included"
-    ]
+    ],
+    transport: "Private luxury transport",
+    meals: "Breakfast & dinner",
+    hotels: { makkah: "Fairmont Makkah Hotel (5-star)", madinah: "Zamzam Pullman Madinah" }
   },
   {
     title: "Umrah Standard Package",
@@ -31,7 +36,10 @@ const umrahPackages = [
       "Shared transport",
       "Group guide services",
       "Breakfast included"
-    ]
+    ],
+    transport: "Shared transport",
+    meals: "Breakfast included",
+    hotels: { makkah: "Hilton Makkah (4-star)", madinah: "Madinah Hilton" }
   },
   {
     title: "Umrah Economy Package",
@@ -44,11 +52,43 @@ const umrahPackages = [
       "Standard transport",
       "Group tours",
       "Basic assistance"
-    ]
+    ],
+    transport: "Standard transport",
+    meals: "Not included",
+    hotels: { makkah: "3-star hotels near Harams", madinah: "3-star hotels" }
   }
 ];
 
 const Umrah = () => {
+  const { data: packages, isLoading, error } = useUmrahPackages();
+
+  const displayPackages = packages && packages.length > 0
+    ? packages.map(pkg => {
+        const transformed = transformPackageForDisplay({
+          package: pkg,
+          flights: [],
+          hotels: [],
+          transports: [],
+          minaArafat: null,
+          meals: null,
+          lectures: [],
+          includes: []
+        });
+        return {
+          title: pkg.name || 'Umrah Package',
+          price: pkg.price ? `$${pkg.price.toLocaleString()}` : 'Contact for pricing',
+          dates: pkg.start_date && pkg.end_date 
+            ? `${new Date(pkg.start_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} – ${new Date(pkg.end_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}`
+            : 'Flexible dates',
+          description: transformed.description,
+          features: transformed.features,
+          transport: transformed.transport,
+          meals: transformed.meals.makkah,
+          hotels: transformed.hotels,
+        };
+      })
+    : null;
+
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -67,79 +107,94 @@ const Umrah = () => {
 
         <section className="py-20">
           <div className="container mx-auto px-4">
-            {umrahPackages.map((pkg) => (
-              <div key={pkg.title} className="max-w-5xl mx-auto bg-card rounded-lg border border-border p-6 md:p-10 mb-12">
-                <div className="text-center mb-8">
-                  <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground">{pkg.title}</h2>
-                  <p className="text-muted-foreground mt-2">{pkg.description}</p>
-                </div>
-
-                <div className="grid md:grid-cols-3 gap-8 mb-8">
-                  <div className="space-y-5">
-                    <div className="flex items-start gap-3">
-                      <Calendar className="text-primary mt-1 shrink-0" size={20} />
-                      <div>
-                        <h4 className="font-semibold text-foreground">Travel Dates</h4>
-                        <p className="text-muted-foreground text-sm">{pkg.dates}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Plane className="text-primary mt-1 shrink-0" size={20} />
-                      <div>
-                        <h4 className="font-semibold text-foreground">Flight</h4>
-                        <p className="text-muted-foreground text-sm">{pkg.title.includes("VIP") ? "Business Class" : pkg.title.includes("Standard") ? "Economy Class" : "Economy Flights"}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Bus className="text-primary mt-1 shrink-0" size={20} />
-                      <div>
-                        <h4 className="font-semibold text-foreground">Transport</h4>
-                        <p className="text-muted-foreground text-sm">{pkg.title.includes("VIP") ? "Private luxury transport" : "Shared transport"}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-5">
-                    <div className="flex items-start gap-3">
-                      <Hotel className="text-primary mt-1 shrink-0" size={20} />
-                      <div>
-                        <h4 className="font-semibold text-foreground">Accommodation</h4>
-                        <p className="text-muted-foreground text-sm">{pkg.title.includes("VIP") ? "5-star hotels" : pkg.title.includes("Standard") ? "4-star hotels" : "3-star hotels near Harams"}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-5">
-                    <div className="flex items-start gap-3">
-                      <Utensils className="text-primary mt-1 shrink-0" size={20} />
-                      <div>
-                        <h4 className="font-semibold text-foreground">Meals</h4>
-                        <p className="text-muted-foreground text-sm">{pkg.title.includes("VIP") ? "Breakfast & dinner" : pkg.title.includes("Standard") ? "Breakfast included" : "Not included"}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t border-border pt-6">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                    <div>
-                      <p className="text-3xl font-bold text-primary">{pkg.price}</p>
-                      <p className="text-muted-foreground text-sm">per person</p>
-                    </div>
-                    <div className="flex flex-wrap gap-3">
-                      {["Visa", "Flights", "Hotels", "Transport"].map((item) => (
-                        <span key={item} className="inline-flex items-center gap-1 text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                          <Check size={14} className="text-primary" /> {item}
-                        </span>
-                      ))}
-                    </div>
-                    <Button size="lg" className="bg-[#5C0120] text-white hover:bg-[#4a0019] whitespace-nowrap">
-                      Book Now
-                    </Button>
-                  </div>
-                </div>
+            {isLoading ? (
+              <div className="flex justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
               </div>
-            ))}
+            ) : error ? (
+              <div className="text-center py-20">
+                <p className="text-red-500">Error loading Umrah packages. Please try again later.</p>
+              </div>
+            ) : !displayPackages ? (
+              <div className="text-center py-20">
+                <p className="text-muted-foreground">No Umrah packages available at the moment. Please check back later.</p>
+              </div>
+            ) : (
+              displayPackages.map((pkg: DisplayPackage) => (
+                <div key={pkg.title} className="max-w-5xl mx-auto bg-card rounded-lg border border-border p-6 md:p-10 mb-12">
+                  <div className="text-center mb-8">
+                    <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground">{pkg.title}</h2>
+                    <p className="text-muted-foreground mt-2">{pkg.description}</p>
+                  </div>
+
+                  <div className="grid md:grid-cols-3 gap-8 mb-8">
+                    <div className="space-y-5">
+                      <div className="flex items-start gap-3">
+                        <Calendar className="text-primary mt-1 shrink-0" size={20} />
+                        <div>
+                          <h4 className="font-semibold text-foreground">Travel Dates</h4>
+                          <p className="text-muted-foreground text-sm">{pkg.dates}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <Plane className="text-primary mt-1 shrink-0" size={20} />
+                        <div>
+                          <h4 className="font-semibold text-foreground">Flight</h4>
+                          <p className="text-muted-foreground text-sm">{pkg.features.find((f: string) => f.toLowerCase().includes('flight')) || "Premium airlines"}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <Bus className="text-primary mt-1 shrink-0" size={20} />
+                        <div>
+                          <h4 className="font-semibold text-foreground">Transport</h4>
+                          <p className="text-muted-foreground text-sm">{pkg.transport}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-5">
+                      <div className="flex items-start gap-3">
+                        <Hotel className="text-primary mt-1 shrink-0" size={20} />
+                        <div>
+                          <h4 className="font-semibold text-foreground">Accommodation</h4>
+                          <p className="text-muted-foreground text-sm">{pkg.hotels?.makkah?.name || pkg.hotels?.makkah}</p>
+                          <p className="text-muted-foreground text-sm">{pkg.hotels?.madinah?.name || pkg.hotels?.madinah}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-5">
+                      <div className="flex items-start gap-3">
+                        <Utensils className="text-primary mt-1 shrink-0" size={20} />
+                        <div>
+                          <h4 className="font-semibold text-foreground">Meals</h4>
+                          <p className="text-muted-foreground text-sm">{pkg.meals}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-border pt-6">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                      <div>
+                        <p className="text-3xl font-bold text-primary">{pkg.price}</p>
+                        <p className="text-muted-foreground text-sm">per person</p>
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        {["Visa", "Flights", "Hotels", "Transport"].map((item) => (
+                          <span key={item} className="inline-flex items-center gap-1 text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
+                            <Check size={14} className="text-primary" /> {item}
+                          </span>
+                        ))}
+                      </div>
+                      <Button size="lg" className="bg-[#5C0120] text-white hover:bg-[#4a0019] whitespace-nowrap">
+                        Book Now
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
 
             <div className="max-w-3xl mx-auto mt-16">
               <h3 className="font-heading text-2xl font-bold text-foreground mb-6 text-center">What's Included</h3>

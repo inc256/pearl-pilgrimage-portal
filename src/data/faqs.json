@@ -1,0 +1,132 @@
+[
+  {
+    "title": "Booking & Reservations",
+    "questions": [
+      {
+        "q": "How do I book a Hajj or Umrah package?",
+        "a": "You can book by clicking the 'Book Now' button on any package, contacting us via WhatsApp, or visiting our office. A deposit is required to secure your spot. Our team will guide you through the entire process."
+      },
+      {
+        "q": "How far in advance should I book?",
+        "a": "We recommend booking at least 3-6 months in advance, especially for Hajj packages as they fill up quickly. Umrah packages can be booked 1-3 months ahead for optimal availability."
+      },
+      {
+        "q": "What is the deposit amount to secure my booking?",
+        "a": "A deposit of $500-$1,000 is required to secure your booking, depending on the package. The remaining balance is due 30-60 days before departure."
+      },
+      {
+        "q": "Can I change my travel dates after booking?",
+        "a": "Yes, date changes are possible subject to availability. Please contact our team at least 14 days before your departure for assistance with date modifications."
+      },
+      {
+        "q": "Is there a cancellation policy?",
+        "a": "Yes, cancellations made 60+ days before departure receive a full refund minus processing fees. Cancellations within 30-60 days receive a 50% refund. Within 30 days, fees may apply."
+      }
+    ]
+  },
+  {
+    "title": "Documents & Visa",
+    "questions": [
+      {
+        "q": "What documents are required for Umrah/Hajj visa?",
+        "a": "You'll need a valid passport (at least 6 months validity), passport-size photos with white background, proof of vaccination (Meningitis and COVID-19 as required), and completed visa application forms. We assist with the entire process."
+      },
+      {
+        "q": "How long does visa processing take?",
+        "a": "Umrah visas typically take 3-7 business days. Hajj visas may take longer during peak season. We'll handle all documentation for you."
+      },
+      {
+        "q": "Do I need specific vaccinations?",
+        "a": "Yes, Meningitis vaccination is required for all pilgrims. COVID-19 vaccination may also be required depending on current Saudi regulations. We recommend checking with our team for the latest requirements."
+      },
+      {
+        "q": "Can you help with passport renewal?",
+        "a": "While we don't directly handle passport renewals, we can provide guidance and resources to help you through the process."
+      }
+    ]
+  },
+  {
+    "title": "Accommodation & Transportation",
+    "questions": [
+      {
+        "q": "How close are the hotels to the Harams?",
+        "a": "Our packages include hotels ranging from 200m to 1km from the Harams in Makkah and Madinah. Premium packages offer closer proximity, some within walking distance."
+      },
+      {
+        "q": "What hotel amenities are included?",
+        "a": "Hotels include air conditioning, private bathrooms, WiFi, and daily housekeeping. Breakfast is included; some packages include breakfast and dinner."
+      },
+      {
+        "q": "How is transportation handled during the pilgrimage?",
+        "a": "All ground transportation between cities (Makkah, Madinah, Mina, Arafat) is included. We use comfortable, air-conditioned luxury buses for all pilgrimages."
+      },
+      {
+        "q": "What if I have special dietary requirements?",
+        "a": "We work with hotels to accommodate special dietary needs including halal requirements, vegetarian options, and food allergies. Please inform us in advance."
+      }
+    ]
+  },
+  {
+    "title": "During Your Pilgrimage",
+    "questions": [
+      {
+        "q": "Will I have a guide during Hajj?",
+        "a": "Yes, all our packages include professional guides who are experienced in Hajj rituals and can assist in multiple languages including English, Arabic, and Urdu."
+      },
+      {
+        "q": "What should I pack for Hajj/Umrah?",
+        "a": "Essential items include Ihram garments (for men), modest clothing, comfortable walking shoes, personal medications, and personal toiletries. We provide a detailed packing list upon booking."
+      },
+      {
+        "q": "Is there WiFi available during the trip?",
+        "a": "Yes, WiFi is available at most hotels. Mobile data is also available through Saudi carriers. We recommend getting a local SIM card for convenience."
+      },
+      {
+        "q": "What happens if I have a medical emergency?",
+        "a": "We have emergency contacts and partnerships with local medical facilities. Premium packages include travel insurance with medical coverage. Our team is available 24/7 for support."
+      }
+    ]
+  },
+  {
+    "title": "Payments & Pricing",
+    "questions": [
+      {
+        "q": "What payment methods do you accept?",
+        "a": "We accept bank transfers, credit/debit cards, mobile money (where available), and cash payments at our office. All transactions are secure and documented."
+      },
+      {
+        "q": "Do you offer payment plans?",
+        "a": "Yes, we offer flexible installment plans for bookings made well in advance. Contact our team to discuss a payment schedule that works for you."
+      },
+      {
+        "q": "Are there any hidden costs?",
+        "a": "No, we believe in transparent pricing. All inclusions are clearly listed for each package. Personal expenses, additional meals, and optional activities are the only extras you may incur."
+      },
+      {
+        "q": "Is travel insurance included?",
+        "a": "Travel insurance with comprehensive coverage is included in our premium packages. Basic coverage is available for other packages. We recommend reviewing coverage details before travel."
+      }
+    ]
+  },
+  {
+    "title": "Pre-Travel Preparation",
+    "questions": [
+      {
+        "q": "What preparation sessions do you offer?",
+        "a": "We provide pre-travel lectures covering Hajj/Umrah rituals, spiritual preparation, health tips, and what to expect during your pilgrimage. These sessions are included in all packages."
+      },
+      {
+        "q": "How should I prepare spiritually?",
+        "a": "We recommend increasing your prayers, reading about Hajj/Umrah rituals, making dua, and seeking knowledge about the significance of each ritual. Our preparation sessions also help with spiritual readiness."
+      },
+      {
+        "q": "Do I need to learn Arabic phrases?",
+        "a": "While not mandatory, learning basic Arabic phrases for Dua and common interactions can enhance your experience. Our guides also help translate and explain throughout your journey."
+      },
+      {
+        "q": "What health preparations should I make?",
+        "a": "We recommend a general health checkup before travel, ensuring all vaccinations are up to date, packing necessary medications, and preparing physically with light exercise. Consult your doctor for personalized advice."
+      }
+    ]
+  }
+]

@@ -1,4 +1,25 @@
+import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { useContactInfo } from "@/hooks/useSupabase";
+
+const iconMap: Record<string, React.ReactNode> = {
+  phone: <Phone className="h-4 w-4" />,
+  email: <Mail className="h-4 w-4" />,
+  address: <MapPin className="h-4 w-4" />,
+  hours: <Clock className="h-4 w-4" />,
+};
+
 const Footer = () => {
+  const { data: contactInfo } = useContactInfo();
+
+  const getContactByType = (type: string) => {
+    return contactInfo?.find(c => c.type === type);
+  };
+
+  const phone = getContactByType("phone");
+  const email = getContactByType("email");
+  const address = getContactByType("address");
+  const hours = getContactByType("hours");
+
   return (
     <footer className="bg-foreground text-primary-foreground py-12">
       <div className="container mx-auto px-4">
@@ -19,12 +40,32 @@ const Footer = () => {
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold mb-3 text-sm">Follow Us</h4>
+            <h4 className="font-semibold mb-3 text-sm">Contact Us</h4>
             <ul className="space-y-2 text-sm text-primary-foreground/60">
-              <li><a href="#" className="hover:text-primary-foreground transition-colors">Facebook</a></li>
-              <li><a href="#" className="hover:text-primary-foreground transition-colors">Instagram</a></li>
-              <li><a href="#" className="hover:text-primary-foreground transition-colors">Twitter</a></li>
-              <li><a href="#" className="hover:text-primary-foreground transition-colors">YouTube</a></li>
+              {phone && (
+                <li className="flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  <span>{phone.value}</span>
+                </li>
+              )}
+              {email && (
+                <li className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  <span>{email.value}</span>
+                </li>
+              )}
+              {address && (
+                <li className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  <span>{address.value}</span>
+                </li>
+              )}
+              {hours && (
+                <li className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  <span>{hours.value}</span>
+                </li>
+              )}
             </ul>
           </div>
         </div>

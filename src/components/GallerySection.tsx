@@ -1,25 +1,14 @@
-import galleryMadinah from "@/assets/gallery-madinah.jpg";
-import galleryPilgrims from "@/assets/gallery-pilgrims.jpg";
-import galleryHotel from "@/assets/gallery-hotel.jpg";
-import galleryGroup from "@/assets/gallery-group.jpg";
-import galleryClockTower from "@/assets/gallery-clocktower.jpg";
-import galleryArafat from "@/assets/gallery-arafat.jpg";
-
-const images = [
-  { src: galleryMadinah, alt: "Madinah Mosque Interior" },
-  { src: galleryPilgrims, alt: "Pilgrims at Kaaba" },
-  { src: galleryHotel, alt: "Luxury Hotel Room" },
-  { src: galleryGroup, alt: "Group Photo in Makkah" },
-  { src: galleryClockTower, alt: "Makkah Clock Tower" },
-  { src: galleryArafat, alt: "Mount Arafat" },
-];
+import { useGallery } from "@/hooks/useSupabase";
+import { ErrorDisplay, ErrorMessage } from "./ErrorDisplay";
+import { LoadingGrid } from "./LoadingSpinner";
 
 interface GallerySectionProps {
   limit?: number;
 }
 
 const GallerySection = ({ limit }: GallerySectionProps) => {
-  const displayImages = limit ? images.slice(0, limit) : images;
+  const { data: images, isLoading, error, refetch } = useGallery();
+  const displayImages = limit && images ? images.slice(0, limit) : images;
 
   return (
     <section id="gallery" className="py-20 bg-background">
@@ -29,20 +18,34 @@ const GallerySection = ({ limit }: GallerySectionProps) => {
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground">Gallery</h2>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-5xl mx-auto">
-          {displayImages.map((img, i) => (
-            <div key={i} className="aspect-square overflow-hidden rounded-lg">
-              <img
-                src={img.src}
-                alt={img.alt}
-                loading="lazy"
-                width={800}
-                height={600}
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-          ))}
-        </div>
+        {isLoading ? (
+          <LoadingGrid count={limit || 6} />
+        ) : error ? (
+          <ErrorDisplay
+            title="Failed to load gallery"
+            message="We couldn't load the gallery images. Please try again."
+            onRetry={() => refetch()}
+          />
+        ) : displayImages && displayImages.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-5xl mx-auto">
+            {displayImages.map((img) => (
+              <div key={img.id} className="aspect-square overflow-hidden rounded-lg">
+                <img
+                  src={img.image_url || ""}
+                  alt={img.alt_text || img.title || "Gallery image"}
+                  loading="lazy"
+                  width={800}
+                  height={600}
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">
+            No gallery images available yet.
+          </div>
+        )}
       </div>
     </section>
   );
