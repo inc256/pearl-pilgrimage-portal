@@ -78,88 +78,7 @@ const Contact = () => {
         <section className="py-20">
           <div className="container mx-auto px-4">
             <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-              <div>
-                <h2 className="font-heading text-2xl font-bold text-foreground mb-6">Send Us a Message</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium text-foreground mb-2 block">First Name</label>
-                      <Input 
-                        name="first_name"
-                        value={formData.first_name}
-                        onChange={handleInputChange}
-                        placeholder="Your first name" 
-                        className="w-full" 
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-foreground mb-2 block">Last Name</label>
-                      <Input 
-                        name="last_name"
-                        value={formData.last_name}
-                        onChange={handleInputChange}
-                        placeholder="Your last name" 
-                        className="w-full" 
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Email</label>
-                    <Input 
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      type="email" 
-                      placeholder="your@email.com" 
-                      className="w-full" 
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Phone</label>
-                    <Input 
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      type="tel" 
-                      placeholder="+1 (555) 000-0000" 
-                      className="w-full" 
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Subject</label>
-                    <Input 
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleInputChange}
-                      placeholder="How can we help?" 
-                      className="w-full" 
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Message</label>
-                    <Textarea 
-                      name="message"
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      placeholder="Your message..." 
-                      rows={5} 
-                      className="w-full" 
-                      required
-                    />
-                  </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-[#5C0120] text-white hover:bg-[#4a0019]"
-                    disabled={submitMutation.isPending}
-                  >
-                    {submitMutation.isPending ? 'Sending...' : 'Send Message'}
-                  </Button>
-                </form>
-              </div>
+
 
               <div>
                 <h2 className="font-heading text-2xl font-bold text-foreground mb-6">Contact Information</h2>
@@ -185,16 +104,17 @@ const Contact = () => {
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
-                        <Phone className="text-primary" size={20} />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-foreground">Phone</h4>
-                        <p className="text-muted-foreground">+1 (555) 123-4567</p>
-                        <p className="text-muted-foreground">+1 (555) 987-6543</p>
-                      </div>
-                    </div>
+                     <div className="flex items-start gap-4">
+                       <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                         <Phone className="text-primary" size={20} />
+                       </div>
+                       <div>
+                         <h4 className="font-semibold text-foreground">Phone</h4>
+                         <p className="text-muted-foreground"><a href="tel:0705447319" className="hover:text-foreground">0705447319</a></p>
+                         <p className="text-muted-foreground"><a href="tel:0702184524" className="hover:text-foreground">0702184524</a></p>
+                         <p className="text-muted-foreground"><a href="tel:0756505926" className="hover:text-foreground">0756505926</a></p>
+                       </div>
+                     </div>
 
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
@@ -207,31 +127,49 @@ const Contact = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
-                        <MapPin className="text-primary" size={20} />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-foreground">Office</h4>
-                        <p className="text-muted-foreground">123 Pilgrim Street</p>
-                        <p className="text-muted-foreground">Makkah, Saudi Arabia</p>
-                      </div>
-                    </div>
+                     {/* <div className="flex items-start gap-4">
+                       <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                         <MapPin className="text-primary" size={20} />
+                       </div>
+                       <div>
+                         <h4 className="font-semibold text-foreground">Office</h4>
+                         <p className="text-muted-foreground">123 Pilgrim Street</p>
+                         <p className="text-muted-foreground">Makkah, Saudi Arabia</p>
+                       </div>
+                     </div> */}
 
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
-                        <Clock className="text-primary" size={20} />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-foreground">Office Hours</h4>
-                        <p className="text-muted-foreground">Sunday - Thursday: 9AM - 6PM</p>
-                        <p className="text-muted-foreground">Friday - Saturday: Closed</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+                     {/* <div className="flex items-start gap-4">
+                       <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                         <Clock className="text-primary" size={20} />
+                       </div>
+                       <div>
+                         <h4 className="font-semibold text-foreground">Office Hours</h4>
+                         <p className="text-muted-foreground">Sunday - Thursday: 9AM - 6PM</p>
+                         <p className="text-muted-foreground">Friday - Saturday: Closed</p>
+                       </div>
+                     </div> */}
+                     <div className="text-center mt-6 space-y-6">
+                       <a
+                         href="https://wa.me/256756505926"
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-lg font-medium hover:bg-secondary transition-colors"
+                       >
+                         Chat on WhatsApp
+                       </a>
+                       <a
+                         href="https://tiktok.com/@pearlhijjaandumrah"
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-lg font-medium hover:bg-secondary transition-colors"
+                       >
+                         Follow on TikTok
+                       </a>
+                     </div>
+                   </div>
+                 )}
+               </div>
+             </div>
           </div>
         </section>
       </div>

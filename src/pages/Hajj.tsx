@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { Plane, Hotel, Bus, Calendar, Utensils, Check, BookOpen, Shield } from "lucide-react";
 import { useHajjPackages } from "@/hooks/useSupabase";
 import { transformPackageForDisplay, DisplayPackage } from "@/lib/packageUtils";
@@ -207,7 +208,7 @@ const Hajj = () => {
                         ))}
                       </div>
                       <Button size="lg" className="bg-[#5C0120] text-white hover:bg-[#4a0019] whitespace-nowrap">
-                        Book Now
+                        <Link to="/contact">Book Now</Link>
                       </Button>
                     </div>
                   </div>

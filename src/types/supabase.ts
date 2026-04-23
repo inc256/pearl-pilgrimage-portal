@@ -31,8 +31,10 @@ export interface Hotel {
   id: number;
   package_id: number | null;
   city: string | null;
+  image: string | null;
   name: string | null;
   stars: number | null;
+  location: string | null;
   description: string | null;
 }
 
@@ -41,7 +43,7 @@ export interface HotelItem {
   name: string | null;
   city: string | null;
   stars: number | null;
-  image_url: string | null;
+  image: string | null;
 }
 
 export interface Transport {

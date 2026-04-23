@@ -30,25 +30,33 @@ const ContactSection = () => {
                 <p className="text-muted-foreground text-sm">info@pearlhijja.com</p>
               </div>
             </div>
-            <div className="flex items-start gap-3">
+            {/* <div className="flex items-start gap-3">
               <MapPin className="text-primary mt-1 shrink-0" size={20} />
               <div>
                 <h4 className="font-semibold text-foreground">Office</h4>
                 <p className="text-muted-foreground text-sm">Kampala, Uganda</p>
               </div>
-            </div>
+            </div> */}
 
             <a
-              href="https://wa.me/256705447319"
+              href="https://wa.me/256756505926"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-secondary transition-colors"
             >
               Chat on WhatsApp
             </a>
+            <a
+              href="https://tiktok.com/@pearlhijjaandumrah"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-secondary transition-colors"
+            >
+              Follow on TikTok
+            </a>
           </div>
 
-          <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+          {/* <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
             <Input placeholder="Your Name" className="bg-card" />
             <Input placeholder="Email Address" type="email" className="bg-card" />
             <Input placeholder="Phone Number" className="bg-card" />
@@ -56,7 +64,7 @@ const ContactSection = () => {
             <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-secondary">
               Send Message
             </Button>
-          </form>
+          </form> */}
         </div>
       </div>
     </section>

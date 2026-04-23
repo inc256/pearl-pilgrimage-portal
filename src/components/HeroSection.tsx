@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-makkah.jpg";
 
 const HeroSection = () => {
@@ -24,7 +25,7 @@ const HeroSection = () => {
             <a href="#umrah">View Packages</a>
           </Button>
           <Button size="lg" variant="outline" className="border-[#5C0120] text-[#5C0120] hover:bg-[#5C0120] hover:text-white text-base px-8">
-            Book Now
+            <Link to="/contact">Book Now</Link>
           </Button>
         </div>
       </div>

@@ -42,12 +42,18 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-3 text-sm">Contact Us</h4>
             <ul className="space-y-2 text-sm text-primary-foreground/60">
-              {phone && (
-                <li className="flex items-center gap-2">
-                  <Phone className="h-4 w-4" />
-                  <span>{phone.value}</span>
-                </li>
-              )}
+              <li className="flex items-center gap-2">
+                <Phone className="h-4 w-4" />
+                <a href="tel:0705447319" className="hover:text-primary-foreground">0705447319</a>
+              </li>
+              <li className="flex items-center gap-2">
+                <Phone className="h-4 w-4" />
+                <a href="tel:0702184524" className="hover:text-primary-foreground">0702184524</a>
+              </li>
+              <li className="flex items-center gap-2">
+                <Phone className="h-4 w-4" />
+                <a href="tel:0756505926" className="hover:text-primary-foreground">0756505926</a>
+              </li>
               {email && (
                 <li className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />

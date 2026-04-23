@@ -4,7 +4,6 @@ import UmrahPackages from "@/components/UmrahPackages";
 import HajjPackage from "@/components/HajjPackage";
 import HotelsSection from "@/components/HotelsSection";
 import Footer from "@/components/Footer";
-import WhatsAppButton from "@/components/WhatsAppButton";
 import GallerySection from "@/components/GallerySection";
 
 const Index = () => {
@@ -17,7 +16,6 @@ const Index = () => {
       <HotelsSection />
       <GallerySection limit={6} />
       <Footer />
-      <WhatsAppButton />
     </div>
   );
 };

@@ -30,18 +30,16 @@ const HotelsSection = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
             {hotels.map((hotel) => (
               <div key={hotel.id} className="bg-card rounded-lg border border-border overflow-hidden">
-                {hotel.image_url && (
-                  <div className="aspect-[3/2] overflow-hidden">
-                    <img 
-                      src={hotel.image_url} 
-                      alt={hotel.name || "Hotel"} 
-                      loading="lazy" 
-                      width={800} 
-                      height={600} 
-                      className="w-full h-full object-cover" 
-                    />
-                  </div>
-                )}
+                <div className="aspect-[3/2] overflow-hidden">
+                  <img
+                    src={hotel.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
+                    alt={hotel.name || "Hotel"}
+                    loading="lazy"
+                    width={800}
+                    height={600}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 <div className="p-4">
                   <h3 className="font-heading text-sm font-semibold text-foreground">{hotel.name}</h3>
                   <p className="text-muted-foreground text-xs mb-2">{hotel.city}</p>

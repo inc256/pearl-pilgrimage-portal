@@ -38,11 +38,11 @@ const Navbar = () => {
         </div>
 
         <div className="hidden lg:flex items-center gap-3">
-          <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+          {/* <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
             Client Portal
-          </Button>
+          </Button> */}
           <Button size="sm" className="bg-[#5C0120] text-white hover:bg-[#4a0019]">
-            Book Now
+            <Link to="/contact">Book Now</Link>
           </Button>
         </div>
 
@@ -66,11 +66,11 @@ const Navbar = () => {
             </Link>
           ))}
           <div className="flex gap-3 mt-4">
-            <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground flex-1">
+            {/* <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground flex-1">
               Client Portal
-            </Button>
+            </Button> */}
             <Button size="sm" className="bg-[#5C0120] text-white hover:bg-[#4a0019] flex-1">
-              Book Now
+              <Link to="/contact">Book Now</Link>
             </Button>
           </div>
         </div>
