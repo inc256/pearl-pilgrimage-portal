@@ -2,7 +2,6 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import UmrahPackages from "@/components/UmrahPackages";
 import HajjPackage from "@/components/HajjPackage";
-import UpcomingTours from "@/components/UpcomingTours";
 import HotelsSection from "@/components/HotelsSection";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -15,7 +14,6 @@ const Index = () => {
       <HeroSection />
       <UmrahPackages />
       <HajjPackage />
-      <UpcomingTours />
       <HotelsSection />
       <GallerySection limit={6} />
       <Footer />

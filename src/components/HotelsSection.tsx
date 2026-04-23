@@ -6,6 +6,10 @@ import { LoadingSpinner } from "./LoadingSpinner";
 const HotelsSection = () => {
   const { data: hotels, isLoading, error, refetch } = useHotels();
 
+  if (!hotels || hotels.length === 0) {
+    return null;
+  }
+
   return (
     <section id="hotels" className="py-20 bg-muted">
       <div className="container mx-auto px-4">
@@ -22,20 +26,22 @@ const HotelsSection = () => {
             message="We couldn't load the hotel information. Please try again."
             onRetry={() => refetch()}
           />
-        ) : hotels && hotels.length > 0 ? (
+        ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
             {hotels.map((hotel) => (
               <div key={hotel.id} className="bg-card rounded-lg border border-border overflow-hidden">
-                <div className="aspect-[3/2] overflow-hidden">
-                  <img 
-                    src={hotel.image_url || ""} 
-                    alt={hotel.name || "Hotel"} 
-                    loading="lazy" 
-                    width={800} 
-                    height={600} 
-                    className="w-full h-full object-cover" 
-                  />
-                </div>
+                {hotel.image_url && (
+                  <div className="aspect-[3/2] overflow-hidden">
+                    <img 
+                      src={hotel.image_url} 
+                      alt={hotel.name || "Hotel"} 
+                      loading="lazy" 
+                      width={800} 
+                      height={600} 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                )}
                 <div className="p-4">
                   <h3 className="font-heading text-sm font-semibold text-foreground">{hotel.name}</h3>
                   <p className="text-muted-foreground text-xs mb-2">{hotel.city}</p>
@@ -47,10 +53,6 @@ const HotelsSection = () => {
                 </div>
               </div>
             ))}
-          </div>
-        ) : (
-          <div className="text-center py-8 text-muted-foreground">
-            No Hajj packages available at the moment. Please check back later.
           </div>
         )}
       </div>

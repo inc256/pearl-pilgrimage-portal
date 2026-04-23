@@ -24,22 +24,7 @@ const HajjPackage = () => {
   }
 
   if (error || !packages || packages.length === 0) {
-    return (
-      <section id="hajj" className="py-20 bg-muted">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <p className="text-accent font-medium text-sm uppercase tracking-wider mb-2">Premium Experience</p>
-            <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground">Hajj Packages</h2>
-          </div>
-          <div className="text-center py-20">
-            <p className="text-muted-foreground">No Hajj packages available at the moment. Please check back later.</p>
-            <Link to="/hajj">
-              <Button className="mt-4">View All Hajj Packages</Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-    );
+    return null;
   }
 
   // Display the first package as featured

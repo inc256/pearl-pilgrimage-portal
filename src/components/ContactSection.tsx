@@ -18,7 +18,9 @@ const ContactSection = () => {
               <Phone className="text-primary mt-1 shrink-0" size={20} />
               <div>
                 <h4 className="font-semibold text-foreground">Phone</h4>
-                <p className="text-muted-foreground text-sm">+256 700 000 000</p>
+                <p className="text-muted-foreground text-sm">0705447319</p>
+                <p className="text-muted-foreground text-sm">0702184524</p>
+                <p className="text-muted-foreground text-sm">0756505926</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -37,7 +39,7 @@ const ContactSection = () => {
             </div>
 
             <a
-              href="https://wa.me/256700000000"
+              href="https://wa.me/256705447319"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-secondary transition-colors"

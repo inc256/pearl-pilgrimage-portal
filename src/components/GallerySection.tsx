@@ -10,6 +10,10 @@ const GallerySection = ({ limit }: GallerySectionProps) => {
   const { data: images, isLoading, error, refetch } = useGallery();
   const displayImages = limit && images ? images.slice(0, limit) : images;
 
+  if (!displayImages || displayImages.length === 0) {
+    return null;
+  }
+
   return (
     <section id="gallery" className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -26,7 +30,7 @@ const GallerySection = ({ limit }: GallerySectionProps) => {
             message="We couldn't load the gallery images. Please try again."
             onRetry={() => refetch()}
           />
-        ) : displayImages && displayImages.length > 0 ? (
+        ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-5xl mx-auto">
             {displayImages.map((img) => (
               <div key={img.id} className="aspect-square overflow-hidden rounded-lg">
@@ -40,10 +44,6 @@ const GallerySection = ({ limit }: GallerySectionProps) => {
                 />
               </div>
             ))}
-          </div>
-        ) : (
-          <div className="text-center py-8 text-muted-foreground">
-            No gallery images available yet.
           </div>
         )}
       </div>

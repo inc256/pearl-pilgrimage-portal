@@ -54,18 +54,6 @@ const Footer = () => {
                   <span>{email.value}</span>
                 </li>
               )}
-              {address && (
-                <li className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  <span>{address.value}</span>
-                </li>
-              )}
-              {hours && (
-                <li className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  <span>{hours.value}</span>
-                </li>
-              )}
             </ul>
           </div>
         </div>
