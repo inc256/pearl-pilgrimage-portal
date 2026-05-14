@@ -2,8 +2,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Plane, Hotel, Bus, Utensils, Tent, BookOpen } from "lucide-react";
 import { useAllPackages } from "@/hooks/useSupabase";
+import { Package, FlightInfo, Accommodation, Transportation, MinaArafat, Meals, Lecture, IncludeItem } from "@/types/supabase";
 
 const fallbackPackages = [
   {
@@ -43,15 +44,36 @@ const fallbackPackages = [
 const Packages = () => {
   const { data: packages, isLoading, error } = useAllPackages();
 
-  const displayPackages = packages && packages.length > 0 
-    ? packages.map(pkg => ({
-        title: pkg.name || 'Package',
-        description: `${pkg.type === 'hajj' ? 'Hajj' : 'Umrah'} package`,
-        price: pkg.price ? `$${pkg.price.toLocaleString()}` : 'Contact for pricing',
-        type: pkg.type || 'umrah',
-        features: ["Visa Included", "Hotel Accommodation", "Transport", "Flight Tickets", "Guided Tours"],
-        link: pkg.type === 'hajj' ? '/hajj' : '/umrah'
-      }))
+  // Helper to parse JSON safely
+  const parseJson = <T,>(jsonString: string, fallback: T): T => {
+    try {
+      return JSON.parse(jsonString);
+    } catch {
+      return fallback;
+    }
+  };
+
+  const displayPackages = packages && packages.length > 0
+    ? packages.map((pkg: Package) => {
+        const flights: FlightInfo = parseJson(pkg.flights, { notes: "", return: "", airline: "", departure: "" });
+        const accommodations: Accommodation[] = parseJson(pkg.accommodations, []);
+        const transportation: Transportation = parseJson(pkg.transportation, { type: "", description: "" });
+        const minaArafat: MinaArafat = parseJson(pkg.mina_arafat, { minaTentType: "", tentFeatures: "", arafatDetails: "" });
+        const meals: Meals = parseJson(pkg.meals, { mina: "", makkah: "", madinah: "" });
+        const lectures: Lecture[] = parseJson(pkg.lectures, []);
+        const includes: IncludeItem[] = parseJson(pkg.includes, []);
+
+        return {
+          ...pkg,
+          parsedFlights: flights,
+          parsedAccommodations: accommodations,
+          parsedTransportation: transportation,
+          parsedMinaArafat: minaArafat,
+          parsedMeals: meals,
+          parsedLectures: lectures,
+          parsedIncludes: includes,
+        };
+      })
     : null;
 
   return (
@@ -81,26 +103,115 @@ const Packages = () => {
                 <p className="text-muted-foreground">No packages available at the moment. Please check back later.</p>
               </div>
             ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-                {displayPackages.map((pkg, index) => (
-                  <div key={`${pkg.title}-${index}`} className="bg-card rounded-lg border border-border p-6 md:p-8">
-                    <h3 className="font-heading text-xl font-bold text-foreground mb-2">{pkg.title}</h3>
-                    <p className="text-muted-foreground mb-4">{pkg.description}</p>
-                    <p className="text-3xl font-bold text-primary mb-6">{pkg.price}</p>
-                    <ul className="space-y-2 mb-6">
-                      {pkg.features.map((feature) => (
-                        <li key={feature} className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Check size={16} className="text-primary" /> {feature}
-                        </li>
-                      ))}
-                    </ul>
-                    <Link to={pkg.link}>
-                      <Button className="w-full bg-[#5C0120] text-white hover:bg-[#4a0019]">
-                        View Details <ArrowRight size={16} className="ml-2" />
-                      </Button>
-                    </Link>
-                  </div>
-                ))}
+              <div className="grid md:grid-cols-1 lg:grid-cols-1 gap-8 max-w-4xl mx-auto">
+                {displayPackages.map((pkg, index) => {
+                  const hasFlights = pkg.parsedFlights.airline || pkg.parsedFlights.notes || pkg.parsedFlights.return || pkg.parsedFlights.departure;
+                  const hasAccommodations = pkg.parsedAccommodations.length > 0;
+                  const hasTransportation = pkg.parsedTransportation.type || pkg.parsedTransportation.description;
+                  const hasMinaArafat = pkg.parsedMinaArafat.minaTentType || pkg.parsedMinaArafat.tentFeatures || pkg.parsedMinaArafat.arafatDetails;
+                  const hasMeals = pkg.parsedMeals.mina || pkg.parsedMeals.makkah || pkg.parsedMeals.madinah;
+                  const hasLectures = pkg.parsedLectures.length > 0;
+                  const hasIncludes = pkg.parsedIncludes.length > 0;
+
+                  return (
+                    <div key={`${pkg.name}-${index}`} className="bg-card rounded-lg border border-border p-6 md:p-8">
+                      <div className="mb-6">
+                        <h3 className="font-heading text-2xl font-bold text-foreground mb-2">{pkg.name || 'Package'}</h3>
+                        <div className="flex items-center gap-4 text-muted-foreground">
+                          {pkg.price && (
+                            <span className="text-xl font-semibold text-primary">{pkg.price} / person</span>
+                          )}
+                          {(pkg.start_date || pkg.end_date) && (
+                            <span>
+                              {pkg.start_date ? new Date(pkg.start_date).toLocaleDateString() : 'TBD'} - {pkg.end_date ? new Date(pkg.end_date).toLocaleDateString() : 'TBD'}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="grid md:grid-cols-2 gap-4 mb-6">
+                        {hasFlights && (
+                          <div className="flex items-start gap-2">
+                            <Plane className="text-primary mt-0.5 shrink-0" size={18} />
+                            <div className="text-sm">
+                              <p className="font-medium text-foreground">Flight</p>
+                              <p className="text-muted-foreground">{pkg.parsedFlights.airline || 'Available'}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {hasAccommodations && (
+                          <div className="flex items-start gap-2">
+                            <Hotel className="text-primary mt-0.5 shrink-0" size={18} />
+                            <div className="text-sm">
+                              <p className="font-medium text-foreground">Accommodation</p>
+                              <p className="text-muted-foreground">{pkg.parsedAccommodations.map(a => `${a.city}: ${a.name}`).join(', ') || 'Included'}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {hasTransportation && (
+                          <div className="flex items-start gap-2">
+                            <Bus className="text-primary mt-0.5 shrink-0" size={18} />
+                            <div className="text-sm">
+                              <p className="font-medium text-foreground">Transportation</p>
+                              <p className="text-muted-foreground">{pkg.parsedTransportation.type || 'Included'}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {hasMeals && (
+                          <div className="flex items-start gap-2">
+                            <Utensils className="text-primary mt-0.5 shrink-0" size={18} />
+                            <div className="text-sm">
+                              <p className="font-medium text-foreground">Meals</p>
+                              <p className="text-muted-foreground">Included</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {hasMinaArafat && pkg.type === 'hajj' && (
+                          <div className="flex items-start gap-2">
+                            <Tent className="text-primary mt-0.5 shrink-0" size={18} />
+                            <div className="text-sm">
+                              <p className="font-medium text-foreground">Mina & Arafat</p>
+                              <p className="text-muted-foreground">VIP Tents</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {hasLectures && (
+                          <div className="flex items-start gap-2">
+                            <BookOpen className="text-primary mt-0.5 shrink-0" size={18} />
+                            <div className="text-sm">
+                              <p className="font-medium text-foreground">Lectures</p>
+                              <p className="text-muted-foreground">Included</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {hasIncludes && (
+                        <div className="mb-6">
+                          <h4 className="font-semibold text-foreground mb-3">What's Included</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {pkg.parsedIncludes.slice(0, 6).map((item, i) => (
+                              <span key={i} className="inline-flex items-center gap-1 text-sm text-muted-foreground bg-muted px-2 py-1 rounded">
+                                <Check size={12} className="text-primary" /> {item.text}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <Link to={pkg.type === 'hajj' ? '/hajj' : '/umrah'}>
+                        <Button className="w-full bg-[#5C0120] text-white hover:bg-[#4a0019]">
+                          View {pkg.type === 'hajj' ? 'Hajj' : 'Umrah'} Packages <ArrowRight size={16} className="ml-2" />
+                        </Button>
+                      </Link>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

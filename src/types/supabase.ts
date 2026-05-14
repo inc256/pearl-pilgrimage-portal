@@ -8,14 +8,63 @@ export interface User {
 }
 
 export interface Package {
+  idx?: number;
   id: number;
   name: string | null;
   type: 'hajj' | 'umrah' | null;
-  price: number | null;
+  price: string | null;
   start_date: string | null;
   end_date: string | null;
   created_at: string;
   updated_at: string;
+  flights: string; // JSON string
+  accommodations: string; // JSON string array
+  transportation: string; // JSON string
+  mina_arafat: string; // JSON string
+  meals: string; // JSON string
+  lectures: string; // JSON string array
+  includes: string; // JSON string array
+  cover_image: string | null;
+}
+
+export interface FlightInfo {
+  notes: string;
+  return: string;
+  airline: string;
+  departure: string;
+}
+
+export interface Accommodation {
+  name: string;
+  city: string;
+  stars: number;
+  // add more if needed
+}
+
+export interface Transportation {
+  type: string;
+  description: string;
+}
+
+export interface MinaArafat {
+  minaTentType: string;
+  tentFeatures: string;
+  arafatDetails: string;
+}
+
+export interface Meals {
+  mina: string;
+  makkah: string;
+  madinah: string;
+}
+
+export interface Lecture {
+  title: string;
+  description: string;
+}
+
+export interface IncludeItem {
+  text: string;
 }
 
 export interface Flight {
@@ -125,11 +174,13 @@ export interface ContactInfo {
 export interface GalleryImage {
   id: string;
   title: string | null;
-  image_url: string;
+  image_url: string | null;
   alt_text: string | null;
   category: string | null;
   order_position: number | null;
   created_at: string | null;
+  media_type?: 'image' | 'video';
+  video_url?: string | null;
 }
 
 export interface Tour {
