@@ -127,16 +127,16 @@ const Contact = () => {
                       </div>
                     </div>
 
-                     {/* <div className="flex items-start gap-4">
+                      <div className="flex items-start gap-4">
                        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
                          <MapPin className="text-primary" size={20} />
                        </div>
                        <div>
                          <h4 className="font-semibold text-foreground">Office</h4>
-                         <p className="text-muted-foreground">123 Pilgrim Street</p>
-                         <p className="text-muted-foreground">Makkah, Saudi Arabia</p>
+                         <p className="text-muted-foreground">Along Kampala Road</p>
+                         <p className="text-muted-foreground">Kampala Rd, Kampala</p>
                        </div>
-                     </div> */}
+                     </div> 
 
                      {/* <div className="flex items-start gap-4">
                        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
