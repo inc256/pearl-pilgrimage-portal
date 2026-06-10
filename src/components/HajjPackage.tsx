@@ -1,11 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { Plane, Hotel, Bus, Calendar, Utensils, Check, BookOpen } from "lucide-react";
+import { Plane, Hotel, Bus, Calendar, Utensils, Check, BookOpen, DollarSign } from "lucide-react";
 import { useHajjPackages } from "@/hooks/useSupabase";
 import { transformPackageForDisplay } from "@/lib/packageUtils";
 import { Link } from "react-router-dom";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const HajjPackage = () => {
   const { data: packages, isLoading, error } = useHajjPackages();
+  const { formatPrice, currency } = useCurrency();
+
+  console.log('Current currency in HajjPackage:', currency);
 
   if (isLoading) {
     return (
@@ -27,8 +31,10 @@ const HajjPackage = () => {
     return null;
   }
 
-  // Display the first package as featured
   const featuredPackage = packages[0];
+  console.log('Package price:', featuredPackage.price);
+  console.log('Formatted price:', formatPrice(featuredPackage.price));
+  
   const transformed = transformPackageForDisplay({
     package: featuredPackage,
     flights: [],
@@ -46,6 +52,7 @@ const HajjPackage = () => {
         <div className="text-center mb-12">
           <p className="text-accent font-medium text-sm uppercase tracking-wider mb-2">Premium Experience</p>
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground">{featuredPackage.name || 'Hajj Packages'}</h2>
+          <p className="text-sm text-muted-foreground mt-2">💰 Displaying in: {currency}</p>
         </div>
 
         <div className="max-w-5xl mx-auto bg-card rounded-lg border border-border p-6 md:p-10">
@@ -118,20 +125,30 @@ const HajjPackage = () => {
 
           <div className="border-t border-border pt-6">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-              <div className="flex flex-wrap gap-3">
-                {transformed.includes.length > 0 ? (
-                  transformed.includes.slice(0, 5).map((item) => (
-                    <span key={item} className="inline-flex items-center gap-1 text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                      <Check size={14} className="text-primary" /> {item}
-                    </span>
-                  ))
-                ) : (
-                  ["Visa", "Accommodation", "Flight", "Transport", "Meals"].map((item) => (
-                    <span key={item} className="inline-flex items-center gap-1 text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                      <Check size={14} className="text-primary" /> {item}
-                    </span>
-                  ))
-                )}
+              <div>
+                {featuredPackage.price && (
+                <div className="flex items-center gap-2 mb-3">
+                  <DollarSign size={20} />
+                  <span className="font-semibold text-lg">
+                    {formatPrice(Number(featuredPackage.price))} / person
+                  </span>
+                </div>
+              )}
+                <div className="flex flex-wrap gap-3">
+                  {transformed.includes.length > 0 ? (
+                    transformed.includes.slice(0, 5).map((item) => (
+                      <span key={item} className="inline-flex items-center gap-1 text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
+                        <Check size={14} className="text-primary" /> {item}
+                      </span>
+                    ))
+                  ) : (
+                    ["Visa", "Accommodation", "Flight", "Transport", "Meals"].map((item) => (
+                      <span key={item} className="inline-flex items-center gap-1 text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
+                        <Check size={14} className="text-primary" /> {item}
+                      </span>
+                    ))
+                  )}
+                </div>
               </div>
               <Link to="/hajj">
                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-secondary whitespace-nowrap">

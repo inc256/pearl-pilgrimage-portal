@@ -4,6 +4,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
+import "./index.css"
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Packages from "./pages/Packages.tsx";
@@ -22,21 +24,22 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/packages" element={<Packages />} />
-          <Route path="/hajj" element={<Hajj />} />
-          <Route path="/umrah" element={<Umrah />} />
-          <Route path="/gallery" element={<Gallery />} />
-          <Route path="/blogs" element={<Blogs />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <WhatsAppButton />
-      </BrowserRouter>
+      <CurrencyProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/packages" element={<Packages />} />
+            <Route path="/hajj" element={<Hajj />} />
+            <Route path="/umrah" element={<Umrah />} />
+            <Route path="/gallery" element={<Gallery />} />
+            <Route path="/blogs" element={<Blogs />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <WhatsAppButton />
+        </BrowserRouter>
+      </CurrencyProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

@@ -9,7 +9,7 @@ const navLinks = [
   { label: "Umrah", href: "/umrah" },
   { label: "Gallery", href: "/gallery" },
   { label: "Blogs", href: "/blogs" },
-  { label: "About Us", href: "/about" },
+  // { label: "About Us", href: "/about" },
   { label: "Contact Us", href: "/contact" },
   { label: "FAQ", href: "/faq" },
 ];

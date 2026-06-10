@@ -1,12 +1,14 @@
 import { Plane, Hotel, Bus, Calendar, DollarSign, Check, Utensils, Tent, BookOpen } from "lucide-react";
-import { Package, FlightInfo, Accommodation, Transportation, MinaArafat, Meals, Lecture, IncludeItem } from "@/types/supabase";
+import { Package as PackageType, FlightInfo, Accommodation, Transportation, MinaArafat, Meals, Lecture, IncludeItem } from "@/types/supabase";
+import { useCurrency } from "@/hooks/useCurrency";
 
 interface PackageDetailProps {
-  package: Package;
+  package: PackageType;
 }
 
 const PackageDetail = ({ package: pkg }: PackageDetailProps) => {
-  // Parse JSON fields safely
+  const { formatPrice } = useCurrency();
+  
   const parseJson = <T,>(jsonString: string, fallback: T): T => {
     try {
       return JSON.parse(jsonString);
@@ -23,7 +25,6 @@ const PackageDetail = ({ package: pkg }: PackageDetailProps) => {
   const lectures: Lecture[] = parseJson(pkg.lectures, []);
   const includes: IncludeItem[] = parseJson(pkg.includes, []);
 
-  // Helper to check if section has data
   const hasFlightsData = flights.airline || flights.notes || flights.return || flights.departure;
   const hasAccommodationsData = accommodations.length > 0;
   const hasTransportationData = transportation.type || transportation.description;
@@ -34,7 +35,6 @@ const PackageDetail = ({ package: pkg }: PackageDetailProps) => {
 
   return (
     <div className="max-w-4xl mx-auto bg-card rounded-lg border border-border p-6 md:p-10">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-2">
           {pkg.name || 'Package Details'}
@@ -43,7 +43,7 @@ const PackageDetail = ({ package: pkg }: PackageDetailProps) => {
           {pkg.price && (
             <div className="flex items-center gap-2">
               <DollarSign size={20} />
-              <span className="font-semibold text-lg">{pkg.price} / person</span>
+              <span className="font-semibold text-lg">{formatPrice(pkg.price)} / person</span>
             </div>
           )}
           {(pkg.start_date || pkg.end_date) && (
@@ -57,9 +57,7 @@ const PackageDetail = ({ package: pkg }: PackageDetailProps) => {
         </div>
       </div>
 
-      {/* Sections */}
       <div className="space-y-8">
-        {/* Flights */}
         {hasFlightsData && (
           <div className="flex items-start gap-3">
             <Plane className="text-primary mt-1 shrink-0" size={24} />
@@ -75,7 +73,6 @@ const PackageDetail = ({ package: pkg }: PackageDetailProps) => {
           </div>
         )}
 
-        {/* Accommodations */}
         {hasAccommodationsData && (
           <div className="flex items-start gap-3">
             <Hotel className="text-primary mt-1 shrink-0" size={24} />
@@ -92,7 +89,6 @@ const PackageDetail = ({ package: pkg }: PackageDetailProps) => {
           </div>
         )}
 
-        {/* Transportation */}
         {hasTransportationData && (
           <div className="flex items-start gap-3">
             <Bus className="text-primary mt-1 shrink-0" size={24} />
@@ -106,7 +102,6 @@ const PackageDetail = ({ package: pkg }: PackageDetailProps) => {
           </div>
         )}
 
-        {/* Mina & Arafat */}
         {hasMinaArafatData && (
           <div className="flex items-start gap-3">
             <Tent className="text-primary mt-1 shrink-0" size={24} />
@@ -121,7 +116,6 @@ const PackageDetail = ({ package: pkg }: PackageDetailProps) => {
           </div>
         )}
 
-        {/* Meals */}
         {hasMealsData && (
           <div className="flex items-start gap-3">
             <Utensils className="text-primary mt-1 shrink-0" size={24} />
@@ -136,7 +130,6 @@ const PackageDetail = ({ package: pkg }: PackageDetailProps) => {
           </div>
         )}
 
-        {/* Lectures */}
         {hasLecturesData && (
           <div className="flex items-start gap-3">
             <BookOpen className="text-primary mt-1 shrink-0" size={24} />
@@ -154,7 +147,6 @@ const PackageDetail = ({ package: pkg }: PackageDetailProps) => {
           </div>
         )}
 
-        {/* Includes */}
         {hasIncludesData && (
           <div>
             <h3 className="font-semibold text-foreground mb-4">What's Included</h3>
