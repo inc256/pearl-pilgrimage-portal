@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Plane, Hotel, Bus, Calendar, Utensils, Check, BookOpen, Shield } from "lucide-react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { useHajjPackages } from "@/hooks/useSupabase";
 import { transformPackageForDisplay, DisplayPackage } from "@/lib/packageUtils";
 
@@ -14,7 +15,7 @@ const packageIncludes = [
 const fallbackHajjPackages = [
   {
     title: "Hajj Premium Package",
-    price: "$8,500",
+    price: 31119500,
     dates: "12th May – 5th June",
     description: "The most comprehensive Hajj experience with luxury accommodations and VIP services",
     features: [
@@ -39,7 +40,7 @@ const fallbackHajjPackages = [
   },
   {
     title: "Hajj Economy Package",
-    price: "$6,500",
+    price: 23805500,
     dates: "15th May – 8th June",
     description: "Quality Hajj experience at an affordable price",
     features: [
@@ -63,6 +64,7 @@ const fallbackHajjPackages = [
 
 const Hajj = () => {
   const { data: packages, isLoading, error } = useHajjPackages();
+  const { formatPrice } = useCurrency();
 
   const displayPackages = packages && packages.length > 0
     ? packages.map(pkg => {
@@ -78,7 +80,7 @@ const Hajj = () => {
         });
         return {
           title: pkg.name || 'Hajj Package',
-          price: pkg.price ? `$${pkg.price.toLocaleString()}` : 'Contact for pricing',
+          price: pkg.price || null,
           dates: pkg.start_date && pkg.end_date 
             ? `${new Date(pkg.start_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} – ${new Date(pkg.end_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}`
             : 'Flexible dates',
@@ -197,7 +199,7 @@ const Hajj = () => {
                   <div className="border-t border-border pt-6">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                       <div>
-                        <p className="text-3xl font-bold text-primary">{pkg.price}</p>
+                        <p className="text-3xl font-bold text-primary">{pkg.price ? formatPrice(Number(pkg.price)) : 'Contact for pricing'}</p>
                         <p className="text-muted-foreground text-sm">per person</p>
                       </div>
                       <div className="flex flex-wrap gap-3">

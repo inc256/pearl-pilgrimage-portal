@@ -3,13 +3,14 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Plane, Hotel, Bus, Calendar, Utensils, Check } from "lucide-react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { useUmrahPackages } from "@/hooks/useSupabase";
 import { transformPackageForDisplay, DisplayPackage } from "@/lib/packageUtils";
 
 const fallbackUmrahPackages = [
   {
     title: "Umrah VIP Package",
-    price: "$5,800",
+    price: 21245500,
     dates: "Flexible dates",
     description: "Luxury Umrah experience with premium services and 5-star accommodations",
     features: [
@@ -27,7 +28,7 @@ const fallbackUmrahPackages = [
   },
   {
     title: "Umrah Standard Package",
-    price: "$3,200",
+    price: 11704500,
     dates: "Flexible dates",
     description: "Comfortable Umrah journey with quality accommodations",
     features: [
@@ -44,7 +45,7 @@ const fallbackUmrahPackages = [
   },
   {
     title: "Umrah Economy Package",
-    price: "$2,500",
+    price: 9125000,
     dates: "Flexible dates",
     description: "Affordable Umrah for budget-conscious pilgrims",
     features: [
@@ -62,6 +63,7 @@ const fallbackUmrahPackages = [
 
 const Umrah = () => {
   const { data: packages, isLoading, error } = useUmrahPackages();
+  const { formatPrice } = useCurrency();
 
   const displayPackages = packages && packages.length > 0
     ? packages.map(pkg => {
@@ -77,7 +79,7 @@ const Umrah = () => {
         });
         return {
           title: pkg.name || 'Umrah Package',
-          price: pkg.price ? `$${pkg.price.toLocaleString()}` : 'Contact for pricing',
+          price: pkg.price || null,
           dates: pkg.start_date && pkg.end_date 
             ? `${new Date(pkg.start_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} – ${new Date(pkg.end_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}`
             : 'Flexible dates',
@@ -178,7 +180,7 @@ const Umrah = () => {
                   <div className="border-t border-border pt-6">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                       <div>
-                        <p className="text-3xl font-bold text-primary">{pkg.price}</p>
+                        <p className="text-3xl font-bold text-primary">{pkg.price ? formatPrice(Number(pkg.price)) : 'Contact for pricing'}</p>
                         <p className="text-muted-foreground text-sm">per person</p>
                       </div>
                       <div className="flex flex-wrap gap-3">

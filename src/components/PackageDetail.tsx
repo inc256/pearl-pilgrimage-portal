@@ -1,4 +1,4 @@
-import { Plane, Hotel, Bus, Calendar, DollarSign, Check, Utensils, Tent, BookOpen } from "lucide-react";
+import { Plane, Hotel, Bus, Calendar, Check, Utensils, Tent, BookOpen } from "lucide-react";
 import { Package as PackageType, FlightInfo, Accommodation, Transportation, MinaArafat, Meals, Lecture, IncludeItem } from "@/types/supabase";
 import { useCurrency } from "@/hooks/useCurrency";
 
@@ -42,7 +42,6 @@ const PackageDetail = ({ package: pkg }: PackageDetailProps) => {
         <div className="flex items-center gap-4 text-muted-foreground">
           {pkg.price && (
             <div className="flex items-center gap-2">
-              <DollarSign size={20} />
               <span className="font-semibold text-lg">{formatPrice(pkg.price)} / person</span>
             </div>
           )}

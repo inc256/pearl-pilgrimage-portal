@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Plane, Hotel, Bus, Calendar, DollarSign, Check } from "lucide-react";
+import { Plane, Hotel, Bus, Calendar, Check } from "lucide-react";
 import { useUmrahPackages } from "@/hooks/useSupabase";
 import { transformPackageForDisplay } from "@/lib/packageUtils";
 import { Link } from "react-router-dom";
@@ -55,7 +55,7 @@ const UmrahPackages = () => {
         <div className="text-center mb-12">
           <p className="text-accent font-medium text-sm uppercase tracking-wider mb-2">Pilgrimage Packages</p>
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground">{featuredPackage.name || 'Umrah Packages'}</h2>
-          <p className="text-sm text-muted-foreground mt-2">Showing prices in: {currency}</p>
+          
         </div>
 
         <div className="max-w-4xl mx-auto bg-card rounded-lg border border-border p-6 md:p-10">
@@ -110,7 +110,6 @@ const UmrahPackages = () => {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                <DollarSign size={20} />
                 <span className="font-semibold text-lg">
                   {formatPrice(Number(featuredPackage.price || 0))} / person
                 </span>

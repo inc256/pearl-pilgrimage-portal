@@ -183,7 +183,7 @@ async function fetchGallery(): Promise<GalleryImage[]> {
     const { data, error } = await supabase
       .from('gallery')
       .select('*')
-      .order('order_position', { ascending: true });
+      .order('created_at', { ascending: false });
     
     if (error) {
       console.warn('Gallery table not available:', error.message);

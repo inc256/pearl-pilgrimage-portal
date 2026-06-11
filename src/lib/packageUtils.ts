@@ -2,7 +2,7 @@ import { PackageDetails } from '@/types/supabase';
 
 export interface DisplayPackage {
   title: string;
-  price: string;
+  price: number | null;
   dates: string;
   description: string;
   features: string[];
@@ -38,7 +38,7 @@ export function transformPackageForDisplay(details: PackageDetails): DisplayPack
 
   return {
     title: pkg.name || 'Package',
-    price: pkg.price ? `$${pkg.price.toLocaleString()}` : 'Contact for pricing',
+    price: pkg.price || null,
     dates: pkg.start_date && pkg.end_date 
       ? `${formatDate(pkg.start_date)} – ${formatDate(pkg.end_date)}` 
       : 'Flexible dates',

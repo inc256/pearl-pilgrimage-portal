@@ -5,12 +5,13 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Check, Plane, Hotel, Bus, Utensils, Tent, BookOpen } from "lucide-react";
 import { useAllPackages } from "@/hooks/useSupabase";
 import { Package, FlightInfo, Accommodation, Transportation, MinaArafat, Meals, Lecture, IncludeItem } from "@/types/supabase";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const fallbackPackages = [
   {
     title: "Hajj Premium Package",
     description: "Complete Hajj experience with 5-star accommodations",
-    price: "$8,500",
+    price: 31119500,
     type: "hajj",
     features: ["Visa Included", "5-Star Hotels", "Private Transport", "VIP Tents", "Flight Tickets", "Guided Tours"],
     link: "/hajj"
@@ -18,7 +19,7 @@ const fallbackPackages = [
   {
     title: "Umrah Standard Package",
     description: "Comfortable Umrah journey with quality accommodations",
-    price: "$3,200",
+    price: 11704500,
     type: "umrah",
     features: ["Visa Included", "4-Star Hotels", "Transport", "Flight Tickets", "Guided Tours"],
     link: "/umrah"
@@ -26,7 +27,7 @@ const fallbackPackages = [
   {
     title: "Umrah VIP Package",
     description: "Luxury Umrah experience with premium services",
-    price: "$5,800",
+    price: 21245500,
     type: "umrah",
     features: ["Visa Included", "5-Star Hotels", "Private Transport", "VIP Tents", "Flight Tickets", "Personal Guide"],
     link: "/umrah"
@@ -34,7 +35,7 @@ const fallbackPackages = [
   {
     title: "Hajj Economy Package",
     description: "Affordable Hajj with quality accommodations",
-    price: "$6,500",
+    price: 23805500,
     type: "hajj",
     features: ["Visa Included", "4-Star Hotels", "Transport", "Flight Tickets", "Group Guide"],
     link: "/hajj"
@@ -43,6 +44,7 @@ const fallbackPackages = [
 
 const Packages = () => {
   const { data: packages, isLoading, error } = useAllPackages();
+  const { formatPrice } = useCurrency();
 
   // Helper to parse JSON safely
   const parseJson = <T,>(jsonString: string, fallback: T): T => {
@@ -119,7 +121,7 @@ const Packages = () => {
                         <h3 className="font-heading text-2xl font-bold text-foreground mb-2">{pkg.name || 'Package'}</h3>
                         <div className="flex items-center gap-4 text-muted-foreground">
                           {pkg.price && (
-                            <span className="text-xl font-semibold text-primary">{pkg.price} / person</span>
+                            <span className="text-xl font-semibold text-primary">{formatPrice(Number(pkg.price))} / person</span>
                           )}
                           {(pkg.start_date || pkg.end_date) && (
                             <span>
@@ -139,53 +141,59 @@ const Packages = () => {
                             </div>
                           </div>
                         )}
-
                         {hasAccommodations && (
                           <div className="flex items-start gap-2">
                             <Hotel className="text-primary mt-0.5 shrink-0" size={18} />
                             <div className="text-sm">
                               <p className="font-medium text-foreground">Accommodation</p>
-                              <p className="text-muted-foreground">{pkg.parsedAccommodations.map(a => `${a.city}: ${a.name}`).join(', ') || 'Included'}</p>
+                              {pkg.parsedAccommodations.map((acc, i) => (
+                                <p key={i} className="text-muted-foreground">{acc.city}: {acc.name} ({acc.stars} stars)</p>
+                              ))}
                             </div>
                           </div>
                         )}
-
                         {hasTransportation && (
                           <div className="flex items-start gap-2">
                             <Bus className="text-primary mt-0.5 shrink-0" size={18} />
                             <div className="text-sm">
-                              <p className="font-medium text-foreground">Transportation</p>
-                              <p className="text-muted-foreground">{pkg.parsedTransportation.type || 'Included'}</p>
+                              <p className="font-medium text-foreground">Transport</p>
+                              <p className="text-muted-foreground">{pkg.parsedTransportation.type || 'Available'}</p>
+                              {pkg.parsedTransportation.description && (
+                                <p className="text-muted-foreground">{pkg.parsedTransportation.description}</p>
+                              )}
                             </div>
                           </div>
                         )}
-
                         {hasMeals && (
                           <div className="flex items-start gap-2">
                             <Utensils className="text-primary mt-0.5 shrink-0" size={18} />
                             <div className="text-sm">
                               <p className="font-medium text-foreground">Meals</p>
-                              <p className="text-muted-foreground">Included</p>
+                              {pkg.parsedMeals.makkah && <p className="text-muted-foreground">Makkah: {pkg.parsedMeals.makkah}</p>}
+                              {pkg.parsedMeals.madinah && <p className="text-muted-foreground">Madinah: {pkg.parsedMeals.madinah}</p>}
+                              {pkg.parsedMeals.mina && <p className="text-muted-foreground">Mina: {pkg.parsedMeals.mina}</p>}
                             </div>
                           </div>
                         )}
-
-                        {hasMinaArafat && pkg.type === 'hajj' && (
+                        {hasMinaArafat && (
                           <div className="flex items-start gap-2">
                             <Tent className="text-primary mt-0.5 shrink-0" size={18} />
                             <div className="text-sm">
                               <p className="font-medium text-foreground">Mina & Arafat</p>
-                              <p className="text-muted-foreground">VIP Tents</p>
+                              {pkg.parsedMinaArafat.minaTentType && <p className="text-muted-foreground">Mina: {pkg.parsedMinaArafat.minaTentType}</p>}
+                              {pkg.parsedMinaArafat.tentFeatures && <p className="text-muted-foreground">Features: {pkg.parsedMinaArafat.tentFeatures}</p>}
+                              {pkg.parsedMinaArafat.arafatDetails && <p className="text-muted-foreground">Arafat: {pkg.parsedMinaArafat.arafatDetails}</p>}
                             </div>
                           </div>
                         )}
-
                         {hasLectures && (
                           <div className="flex items-start gap-2">
                             <BookOpen className="text-primary mt-0.5 shrink-0" size={18} />
                             <div className="text-sm">
                               <p className="font-medium text-foreground">Lectures</p>
-                              <p className="text-muted-foreground">Included</p>
+                              {pkg.parsedLectures.map((lecture, i) => (
+                                <p key={i} className="text-muted-foreground">{lecture.title}</p>
+                              ))}
                             </div>
                           </div>
                         )}
@@ -194,21 +202,31 @@ const Packages = () => {
                       {hasIncludes && (
                         <div className="mb-6">
                           <h4 className="font-semibold text-foreground mb-3">What's Included</h4>
-                          <div className="flex flex-wrap gap-2">
-                            {pkg.parsedIncludes.slice(0, 6).map((item, i) => (
-                              <span key={i} className="inline-flex items-center gap-1 text-sm text-muted-foreground bg-muted px-2 py-1 rounded">
-                                <Check size={12} className="text-primary" /> {item.text}
-                              </span>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            {pkg.parsedIncludes.map((item, i) => (
+                              <div key={i} className="flex items-center gap-2">
+                                <Check size={16} className="text-primary" />
+                                <span className="text-muted-foreground text-sm">{item.text}</span>
+                              </div>
                             ))}
                           </div>
                         </div>
                       )}
 
-                      <Link to={pkg.type === 'hajj' ? '/hajj' : '/umrah'}>
-                        <Button className="w-full bg-[#5C0120] text-white hover:bg-[#4a0019]">
-                          View {pkg.type === 'hajj' ? 'Hajj' : 'Umrah'} Packages <ArrowRight size={16} className="ml-2" />
-                        </Button>
-                      </Link>
+                      <div className="border-t border-border pt-6">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                          <div>
+                            {pkg.price && (
+                              <span className="text-2xl font-bold text-primary">{formatPrice(Number(pkg.price))} / person</span>
+                            )}
+                          </div>
+                          <Link to={pkg.link || "/packages"}>
+                            <Button className="bg-[#5C0120] text-white hover:bg-[#4a0019]">
+                              View Details <ArrowRight size={16} className="ml-2" />
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
