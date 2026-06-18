@@ -21,12 +21,16 @@ const HeroSection = () => {
           Premium pilgrimage and travel services tailored for your spiritual journey.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button size="lg" className="bg-primary text-primary-foreground hover:bg-secondary text-base px-8">
-            <a href="#umrah">View Packages</a>
-          </Button>
-          <Button size="lg" variant="outline" className="border-[#5C0120] text-[#5C0120] hover:bg-[#5C0120] hover:text-white text-base px-8">
-            <Link to="/contact">Book Now</Link>
-          </Button>
+          <a href="#umrah" className="block">
+            <Button size="lg" className="bg-primary text-primary-foreground hover:bg-secondary text-base px-8 w-full">
+              View Packages
+            </Button>
+          </a>
+          <Link to="/contact" className="block">
+            <Button size="lg" variant="outline" className="border-[#5C0120] text-[#5C0120] hover:bg-[#5C0120] hover:text-white text-base px-8 w-full">
+              Book Now
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
