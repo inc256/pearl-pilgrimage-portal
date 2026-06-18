@@ -209,9 +209,11 @@ const Hajj = () => {
                           </span>
                         ))}
                       </div>
+                      <Link to="/contact">
                       <Button size="lg" className="bg-[#5C0120] text-white hover:bg-[#4a0019] whitespace-nowrap">
-                        <Link to="/contact">Book Now</Link>
+                        Book Now
                       </Button>
+                        </Link>
                     </div>
                   </div>
                 </div>
