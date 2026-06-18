@@ -127,7 +127,7 @@ const Contact = () => {
                       <div className="flex-1">
                         <h4 className="font-semibold text-foreground mb-1">Office Location</h4>
                         <p className="text-muted-foreground mb-2">
-                          Liberty Tower Kampala Road, Room L4609
+                          Liberty Tower Kampala Road, Room L4B09
                         </p>
                         <a
                           href="https://maps.app.goo.gl/esYLE53h6KW7Et4q6"
