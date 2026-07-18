@@ -1,20 +1,25 @@
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import UmrahPackages from "@/components/UmrahPackages";
-import HajjPackage from "@/components/HajjPackage";
+import UmrahPackagesCarousel from "@/components/UmrahPackagesCarousel";
+import HajjPackageCarousel from "@/components/HajjPackageCarousel";
 import HotelsSection from "@/components/HotelsSection";
 import Footer from "@/components/Footer";
-import GallerySection from "@/components/GallerySection";
 
 const Index = () => {
+  const navigate = useNavigate();
+
+  const handleBookNowClick = () => {
+    navigate("/booking");
+  };
+
   return (
     <div className="min-h-screen">
       <Navbar />
-      <HeroSection />
-      <UmrahPackages />
-      <HajjPackage />
+      <HeroSection onBookNow={handleBookNowClick} />
+      <UmrahPackagesCarousel />
+      <HajjPackageCarousel />
       <HotelsSection />
-      <GallerySection limit={6} />
       <Footer />
     </div>
   );

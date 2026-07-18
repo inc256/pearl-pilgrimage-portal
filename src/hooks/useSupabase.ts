@@ -7,10 +7,14 @@ async function fetchHajjPackages(): Promise<Package[]> {
     .from('packages')
     .select('*')
     .eq('type', 'hajj')
-    .order('price', { ascending: true });
+    .order('start_date', { ascending: true });
   
   if (error) throw error;
-  return data || [];
+  return (data || []).slice().sort((a, b) => {
+    const aDate = a.start_date ? new Date(a.start_date).getTime() : Number.POSITIVE_INFINITY;
+    const bDate = b.start_date ? new Date(b.start_date).getTime() : Number.POSITIVE_INFINITY;
+    return aDate - bDate;
+  });
 }
 
 async function fetchUmrahPackages(): Promise<Package[]> {
@@ -18,10 +22,14 @@ async function fetchUmrahPackages(): Promise<Package[]> {
     .from('packages')
     .select('*')
     .eq('type', 'umrah')
-    .order('price', { ascending: true });
+    .order('start_date', { ascending: true });
   
   if (error) throw error;
-  return data || [];
+  return (data || []).slice().sort((a, b) => {
+    const aDate = a.start_date ? new Date(a.start_date).getTime() : Number.POSITIVE_INFINITY;
+    const bDate = b.start_date ? new Date(b.start_date).getTime() : Number.POSITIVE_INFINITY;
+    return aDate - bDate;
+  });
 }
 
 async function fetchPackageDetails(packageId: number): Promise<PackageDetails> {
@@ -71,9 +79,13 @@ export function useAllPackages() {
       const { data, error } = await supabase
         .from('packages')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('start_date', { ascending: true });
       if (error) throw error;
-      return data || [];
+      return (data || []).slice().sort((a, b) => {
+        const aDate = a.start_date ? new Date(a.start_date).getTime() : Number.POSITIVE_INFINITY;
+        const bDate = b.start_date ? new Date(b.start_date).getTime() : Number.POSITIVE_INFINITY;
+        return aDate - bDate;
+      });
     },
   });
 }

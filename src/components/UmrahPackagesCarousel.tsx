@@ -3,7 +3,7 @@ import { useUmrahPackages } from "@/hooks/useSupabase";
 import { transformPackageForDisplay } from "@/lib/packageUtils";
 import { useCurrency } from "@/contexts/CurrencyContext";
 
-const UmrahPackages = () => {
+const UmrahPackagesCarousel = () => {
   const { data: packages, isLoading, error } = useUmrahPackages();
   const { formatPrice } = useCurrency();
 
@@ -38,42 +38,43 @@ const UmrahPackages = () => {
           </p>
         </div>
 
-        {/* Grid layout - full width, 1 col mobile, 2 cols desktop */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {packages.map((pkg) => {
-            const transformed = transformPackageForDisplay({
-              package: pkg,
-              flights: [],
-              hotels: [],
-              transports: [],
-              minaArafat: null,
-              meals: null,
-              lectures: [],
-              includes: [],
-            });
+        <div className="-mx-4 overflow-x-auto pb-4 px-4 sm:-mx-8 sm:px-8">
+          <div className="flex gap-6 min-w-[max-content] snap-x snap-mandatory">
+            {packages.map((pkg) => {
+              const transformed = transformPackageForDisplay({
+                package: pkg,
+                flights: [],
+                hotels: [],
+                transports: [],
+                minaArafat: null,
+                meals: null,
+                lectures: [],
+                includes: [],
+              });
 
-            return (
-              <PackageCard
-                key={pkg.id}
-                title={pkg.name || 'Umrah Package'}
-                dates={transformed.dates}
-                price={pkg.price ? formatPrice(Number(pkg.price)) : 'Contact'}
-                typeLabel="Umrah"
-                description={transformed.description}
-                flight={transformed.flight.airline}
-                accommodation={`${transformed.hotels.makkah.name} / ${transformed.hotels.madinah.name}`}
-                transport={transformed.transport}
-                includes={transformed.includes.slice(0, 4)}
-                ctaHref={`/booking?packageId=${String(pkg.id)}`}
-                orientation="landscape"
-                layout="grid"
-              />
-            );
-          })}
+              return (
+                <PackageCard
+                  key={pkg.id}
+                  title={pkg.name || 'Umrah Package'}
+                  dates={transformed.dates}
+                  price={pkg.price ? formatPrice(Number(pkg.price)) : 'Contact'}
+                  typeLabel="Umrah"
+                  description={transformed.description}
+                  flight={transformed.flight.airline}
+                  accommodation={`${transformed.hotels.makkah.name} / ${transformed.hotels.madinah.name}`}
+                  transport={transformed.transport}
+                  includes={transformed.includes.slice(0, 4)}
+                  ctaHref={`/booking?packageId=${String(pkg.id)}`}
+                  orientation="portrait"
+                  layout="carousel"
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
   );
 };
 
-export default UmrahPackages;
+export default UmrahPackagesCarousel;

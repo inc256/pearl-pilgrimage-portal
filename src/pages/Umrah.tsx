@@ -1,114 +1,31 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { Plane, Hotel, Bus, Calendar, Utensils, Check } from "lucide-react";
+import PackageCard from "@/components/PackageCard";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useUmrahPackages } from "@/hooks/useSupabase";
-import { transformPackageForDisplay, DisplayPackage } from "@/lib/packageUtils";
-
-const fallbackUmrahPackages = [
-  {
-    title: "Umrah VIP Package",
-    price: 21245500,
-    dates: "Flexible dates",
-    description: "Luxury Umrah experience with premium services and 5-star accommodations",
-    features: [
-      "Emirates Airlines business class",
-      "Fairmont Makkah Hotel (5-star)",
-      "Zamzam Pullman Madinah",
-      "Private transport throughout",
-      "Personal guide services",
-      "Airport VIP assistance",
-      "Breakfast & dinner included"
-    ],
-    transport: "Private luxury transport",
-    meals: "Breakfast & dinner",
-    hotels: { makkah: "Fairmont Makkah Hotel (5-star)", madinah: "Zamzam Pullman Madinah" }
-  },
-  {
-    title: "Umrah Standard Package",
-    price: 11704500,
-    dates: "Flexible dates",
-    description: "Comfortable Umrah journey with quality accommodations",
-    features: [
-      "Saudi Airlines economy class",
-      "Makkah Hilton (4-star)",
-      "Madinah Hilton Hotel",
-      "Shared transport",
-      "Group guide services",
-      "Breakfast included"
-    ],
-    transport: "Shared transport",
-    meals: "Breakfast included",
-    hotels: { makkah: "Hilton Makkah (4-star)", madinah: "Madinah Hilton" }
-  },
-  {
-    title: "Umrah Economy Package",
-    price: 9125000,
-    dates: "Flexible dates",
-    description: "Affordable Umrah for budget-conscious pilgrims",
-    features: [
-      "Economy flights",
-      "3-star hotels near Harams",
-      "Standard transport",
-      "Group tours",
-      "Basic assistance"
-    ],
-    transport: "Standard transport",
-    meals: "Not included",
-    hotels: { makkah: "3-star hotels near Harams", madinah: "3-star hotels" }
-  }
-];
+import { transformPackageForDisplay } from "@/lib/packageUtils";
 
 const Umrah = () => {
   const { data: packages, isLoading, error } = useUmrahPackages();
   const { formatPrice } = useCurrency();
 
-  const displayPackages = packages && packages.length > 0
-    ? packages.map(pkg => {
-        const transformed = transformPackageForDisplay({
-          package: pkg,
-          flights: [],
-          hotels: [],
-          transports: [],
-          minaArafat: null,
-          meals: null,
-          lectures: [],
-          includes: []
-        });
-        return {
-          title: pkg.name || 'Umrah Package',
-          price: pkg.price || null,
-          dates: pkg.start_date && pkg.end_date 
-            ? `${new Date(pkg.start_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} – ${new Date(pkg.end_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}`
-            : 'Flexible dates',
-          description: transformed.description,
-          features: transformed.features,
-          transport: transformed.transport,
-          meals: transformed.meals.makkah,
-          hotels: transformed.hotels,
-        };
-      })
-    : null;
-
   return (
     <div className="min-h-screen">
       <Navbar />
       <div className="pt-20">
-        <section className="py-16 bg-muted">
+        <section className="py-16 bg-[radial-gradient(circle_at_top_left,_rgba(92,1,32,0.08),_transparent_35%),_radial-gradient(circle_at_bottom_right,_rgba(92,1,32,0.08),_transparent_40%)]">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-8">
+            <div className="text-center mb-8 slide-right">
               <p className="text-accent font-medium text-sm uppercase tracking-wider mb-2">Spiritual Journey</p>
-              <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground">Umrah Packages</h1>
+              <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground">Umrah Packages 2026</h1>
               <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-                Experience the blessed journey of Umrah with our tailored packages designed for your comfort and spiritual fulfillment.
+                Embark on a spiritual journey with our thoughtfully designed Umrah packages. Experience comfort and devotion.
               </p>
             </div>
           </div>
         </section>
 
-        <section className="py-20">
+        <section className="py-20 bg-background">
           <div className="container mx-auto px-4">
             {isLoading ? (
               <div className="flex justify-center py-20">
@@ -118,108 +35,45 @@ const Umrah = () => {
               <div className="text-center py-20">
                 <p className="text-red-500">Error loading Umrah packages. Please try again later.</p>
               </div>
-            ) : !displayPackages ? (
+            ) : !packages || packages.length === 0 ? (
               <div className="text-center py-20">
                 <p className="text-muted-foreground">No Umrah packages available at the moment. Please check back later.</p>
               </div>
             ) : (
-              displayPackages.map((pkg: DisplayPackage) => (
-                <div key={pkg.title} className="max-w-5xl mx-auto bg-card rounded-lg border border-border p-6 md:p-10 mb-12">
-                  <div className="text-center mb-8">
-                    <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground">{pkg.title}</h2>
-                    <p className="text-muted-foreground mt-2">{pkg.description}</p>
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 fade-slide">
+                {packages.map((pkg) => {
+                  const transformed = transformPackageForDisplay({
+                    package: pkg,
+                    flights: [],
+                    hotels: [],
+                    transports: [],
+                    minaArafat: null,
+                    meals: null,
+                    lectures: [],
+                    includes: [],
+                  });
 
-                  <div className="grid md:grid-cols-3 gap-8 mb-8">
-                    <div className="space-y-5">
-                      <div className="flex items-start gap-3">
-                        <Calendar className="text-primary mt-1 shrink-0" size={20} />
-                        <div>
-                          <h4 className="font-semibold text-foreground">Travel Dates</h4>
-                          <p className="text-muted-foreground text-sm">{pkg.dates}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <Plane className="text-primary mt-1 shrink-0" size={20} />
-                        <div>
-                          <h4 className="font-semibold text-foreground">Flight</h4>
-                          <p className="text-muted-foreground text-sm">{pkg.features.find((f: string) => f.toLowerCase().includes('flight')) || "Premium airlines"}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <Bus className="text-primary mt-1 shrink-0" size={20} />
-                        <div>
-                          <h4 className="font-semibold text-foreground">Transport</h4>
-                          <p className="text-muted-foreground text-sm">{pkg.transport}</p>
-                        </div>
-                      </div>
+                  return (
+                    <div key={pkg.id} className="flex justify-center slide-right">
+                      <PackageCard
+                        title={pkg.name || 'Umrah Package'}
+                        dates={transformed.dates}
+                        price={pkg.price ? formatPrice(Number(pkg.price)) : 'Contact'}
+                        typeLabel="Umrah"
+                        description={transformed.description}
+                        flight={transformed.flight.airline}
+                        accommodation={`${transformed.hotels.makkah.name} / ${transformed.hotels.madinah.name}`}
+                        transport={transformed.transport}
+                        includes={transformed.includes.slice(0, 4)}
+                        ctaHref={`/booking?packageId=${String(pkg.id)}`}
+                        responsive={true}
+                        layout="grid"
+                      />
                     </div>
-
-                    <div className="space-y-5">
-                      <div className="flex items-start gap-3">
-                        <Hotel className="text-primary mt-1 shrink-0" size={20} />
-                        <div>
-                          <h4 className="font-semibold text-foreground">Accommodation</h4>
-                          <p className="text-muted-foreground text-sm">{pkg.hotels?.makkah?.name || pkg.hotels?.makkah}</p>
-                          <p className="text-muted-foreground text-sm">{pkg.hotels?.madinah?.name || pkg.hotels?.madinah}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-5">
-                      <div className="flex items-start gap-3">
-                        <Utensils className="text-primary mt-1 shrink-0" size={20} />
-                        <div>
-                          <h4 className="font-semibold text-foreground">Meals</h4>
-                          <p className="text-muted-foreground text-sm">{pkg.meals}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-border pt-6">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                      <div>
-                        <p className="text-3xl font-bold text-primary">{pkg.price ? formatPrice(Number(pkg.price)) : 'Contact for pricing'}</p>
-                        <p className="text-muted-foreground text-sm">per person</p>
-                      </div>
-                      <div className="flex flex-wrap gap-3">
-                        {["Visa", "Flights", "Hotels", "Transport"].map((item) => (
-                          <span key={item} className="inline-flex items-center gap-1 text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                            <Check size={14} className="text-primary" /> {item}
-                          </span>
-                        ))}
-                      </div>
-                      <Link to="/contact">
-                      <Button size="lg" className="bg-[#5C0120] text-white hover:bg-[#4a0019] whitespace-nowrap">
-                        Book Now
-                      </Button>
-                        </Link>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-
-            <div className="max-w-3xl mx-auto mt-16">
-              <h3 className="font-heading text-2xl font-bold text-foreground mb-6 text-center">What's Included</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                {[
-                  "Umrah visa processing",
-                  "Round-trip flights",
-                  "Hotel accommodations",
-                  "All ground transportation",
-                  "Professional tour guides",
-                  "24/7 support in Saudi Arabia",
-                  "Airport transfers",
-                  "Meals as specified"
-                ].map((item) => (
-                  <div key={item} className="flex items-center gap-2 text-muted-foreground">
-                    <Check size={16} className="text-primary" /> {item}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
-            </div>
+            )}
           </div>
         </section>
       </div>
