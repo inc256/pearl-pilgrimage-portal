@@ -415,7 +415,7 @@ const BookingForm = () => {
                         <p><span className="text-muted-foreground">Package:</span> {selectedPackage.name}</p>
                         <p><span className="text-muted-foreground">Travelers:</span> {numberOfTravelers}</p>
                         <p><span className="text-muted-foreground">Payment:</span> {paymentPlan}</p>
-                        <p><span className="text-muted-foreground">Total:</span> ${selectedPackage.price ? selectedPackage.price * numberOfTravelers : 'N/A'}</p>
+                        <p><span className="text-muted-foreground">Total:</span> UGX {selectedPackage.price ? selectedPackage.price * numberOfTravelers : 'N/A'}</p>
                       </div>
                     </div>
                   )}
