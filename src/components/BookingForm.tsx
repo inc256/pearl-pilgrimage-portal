@@ -255,7 +255,7 @@ const BookingForm = () => {
         packageDetails = [
           `Package Name: ${selectedPackage.name || 'N/A'}`,
           `Type: ${selectedPackage.type?.toUpperCase() || 'N/A'}`,
-          `Price: $${selectedPackage.price || 'N/A'}`,
+          `Price: UGX${selectedPackage.price || 'N/A'}`,
         ].filter(line => line).join('\n');
       }
 
@@ -391,7 +391,7 @@ const BookingForm = () => {
                       <h4 className="font-semibold text-foreground text-sm sm:text-base">{selectedPackage.name}</h4>
                       <div className="space-y-1.5 text-sm">
                         <p><span className="text-muted-foreground">Type:</span> {selectedPackage.type?.toUpperCase() || 'N/A'}</p>
-                        <p><span className="text-muted-foreground">Price:</span> ${selectedPackage.price || 'N/A'} {numberOfTravelers > 1 && `(× ${numberOfTravelers} = $${selectedPackage.price ? selectedPackage.price * numberOfTravelers : 'N/A'})`}</p>
+                        <p><span className="text-muted-foreground">Price:</span> UGX {selectedPackage.price || 'N/A'} {numberOfTravelers > 1 && `(× ${numberOfTravelers} = UGX ${selectedPackage.price ? selectedPackage.price * numberOfTravelers : 'N/A'})`}</p>
                         {selectedPackage.duration && (
                           <p><span className="text-muted-foreground">Duration:</span> {selectedPackage.duration} days</p>
                         )}
