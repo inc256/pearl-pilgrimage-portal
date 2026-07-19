@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { useAllPackages } from "@/hooks/useSupabase";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, CheckCircle, XCircle, Users, Phone, Mail, User, Package as PackageIcon, CreditCard, Banknote, AlertCircle } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, Users, Phone, Mail, User, Package as PackageIcon, CreditCard, Banknote, AlertCircle, Copy, Check } from "lucide-react";
 
 const BookingForm = () => {
   const { data: packages, isLoading, error } = useAllPackages();
@@ -20,7 +20,7 @@ const BookingForm = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [packageId, setPackageId] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("Bank Deposit"); // Changed default to Bank Deposit
+  const [paymentMethod, setPaymentMethod] = useState("Bank Deposit");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [numberOfTravelers, setNumberOfTravelers] = useState(1);
@@ -28,6 +28,7 @@ const BookingForm = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [copiedField, setCopiedField] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -46,7 +47,7 @@ const BookingForm = () => {
         setPhone(parsed.phone || "");
         setEmail(parsed.email || "");
         setNumberOfTravelers(parsed.numberOfTravelers || 1);
-        setPaymentMethod(parsed.paymentMethod || "Bank Deposit"); // Changed default to Bank Deposit
+        setPaymentMethod(parsed.paymentMethod || "Bank Deposit");
         if (parsed.packageId) setPackageId(parsed.packageId);
       } catch (e) {
         console.error("Failed to load saved form data");
@@ -68,6 +69,26 @@ const BookingForm = () => {
   }, [firstName, lastName, phone, email, numberOfTravelers, paymentMethod, packageId]);
 
   const selectedPackage = packages?.find((pkg) => String(pkg.id) === packageId);
+
+  // Copy to clipboard function
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedField(field);
+      toast({
+        title: "Copied!",
+        description: `${field} copied to clipboard`,
+        duration: 2000,
+      });
+      setTimeout(() => setCopiedField(null), 2000);
+    }).catch(() => {
+      toast({
+        title: "Failed to copy",
+        description: "Please copy manually",
+        variant: "destructive",
+        duration: 2000,
+      });
+    });
+  };
 
   const renderIncludes = (includes: any) => {
     if (!includes) return null;
@@ -158,7 +179,7 @@ const BookingForm = () => {
     setPhone("");
     setEmail("");
     setNumberOfTravelers(1);
-    setPaymentMethod("Bank Deposit"); // Changed default to Bank Deposit
+    setPaymentMethod("Bank Deposit");
     setPackageId(packages && packages.length > 0 ? String(packages[0].id) : "");
     setErrors({});
     setTouched({});
@@ -198,7 +219,6 @@ const BookingForm = () => {
         `Payment Method: ${paymentMethod}`,
       ].join("\n");
 
-      // Add bank details if payment method is Bank Deposit
       if (paymentMethod === "Bank Deposit") {
         message += [
           "",
@@ -508,15 +528,31 @@ const BookingForm = () => {
                   </div>
 
                   {paymentMethod === "Bank Deposit" && (
-                    <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-2">
+                    <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
                       <div className="flex items-start gap-2">
                         <Banknote className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <div>
+                        <div className="flex-1">
                           <p className="text-sm font-medium">Bank Deposit Details</p>
-                          <div className="text-sm space-y-1 mt-1">
+                          <div className="text-sm space-y-2 mt-1">
                             <p><span className="text-muted-foreground">Bank:</span> DFCU</p>
                             <p><span className="text-muted-foreground">Account Name:</span> PEAR HIJJA AND UMRAH SERVICES</p>
-                            <p><span className="text-muted-foreground">Account Number:</span> 01420019634678</p>
+                            <div className="flex items-center gap-2 bg-background/50 rounded p-2 border">
+                              <span className="text-muted-foreground text-xs">Account:</span>
+                              <span className="font-mono font-medium text-sm select-all">01420019634678</span>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 w-7 p-0 ml-auto"
+                                onClick={() => copyToClipboard("01420019634678", "Account Number")}
+                              >
+                                {copiedField === "Account Number" ? (
+                                  <Check className="h-4 w-4 text-green-500" />
+                                ) : (
+                                  <Copy className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </div>
                           </div>
                           <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
                             <AlertCircle className="h-3 w-3" />
@@ -576,10 +612,27 @@ const BookingForm = () => {
             {paymentMethod === "Bank Deposit" && (
               <div className="bg-primary/5 rounded p-3 mb-4 text-sm">
                 <p className="font-medium text-primary">Bank Deposit Reminder</p>
-                <p className="text-muted-foreground mt-1">
-                  Please make the deposit to DFCU Bank, Account: 01420019634678, 
-                  Name: PEAR HIJJA AND UMRAH SERVICES
-                </p>
+                <div className="mt-2 space-y-1">
+                  <p className="text-muted-foreground">Bank: DFCU</p>
+                  <p className="text-muted-foreground">Account: PEAR HIJJA AND UMRAH SERVICES</p>
+                  <div className="flex items-center gap-2 bg-background rounded p-2 mt-1">
+                    <span className="text-xs text-muted-foreground">Account Number:</span>
+                    <span className="font-mono font-medium text-sm select-all">01420019634678</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 w-7 p-0 ml-auto"
+                      onClick={() => copyToClipboard("01420019634678", "Account Number")}
+                    >
+                      {copiedField === "Account Number" ? (
+                        <Check className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
               </div>
             )}
             <div className="flex flex-col sm:flex-row gap-3">
