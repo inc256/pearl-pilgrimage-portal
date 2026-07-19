@@ -1,16 +1,45 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 
+interface Accommodation {
+  city: string;
+  hotelName: string;
+  starRating: number;
+  description: string;
+}
+
+// Shape of the raw "flights" JSON column coming from Supabase, e.g.
+// {"notes": "", "return": "", "airline": "", "departure": ""}
+interface FlightInfo {
+  airline?: string;
+  departure?: string;
+  return?: string;
+  notes?: string;
+}
+
+// Shape of the raw "transportation" JSON column coming from Supabase, e.g.
+// {"type": "", "description": ""}
+interface TransportInfo {
+  type?: string;
+  description?: string;
+}
+
 interface PackageCardProps {
   title: string;
   dates: string;
   price: string;
   typeLabel: string;
   description?: string;
-  flight?: string;
-  accommodation?: string;
+  // Accepts a plain string, the raw Supabase JSON string, or an already-parsed object.
+  flight?: string | FlightInfo | null;
+  accommodation?: Accommodation[] | string | null;
   accommodationSub?: string;
-  transport?: string;
+  // Accepts a plain string, the raw Supabase JSON string, or an already-parsed object.
+  transport?: string | TransportInfo | null;
+  // Label for the transport row. Not every package uses ground transport
+  // (it could be a train, a flight transfer, a private car, etc.), so this
+  // is a free-text label instead of something hardcoded to "Ground Transport".
+  transportType?: string;
   includes?: string[];
   ctaLabel?: string;
   ctaHref?: string;
@@ -30,6 +59,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
   accommodation,
   accommodationSub,
   transport,
+  transportType = 'Transport',
   includes = [],
   ctaLabel = 'Book Now',
   ctaHref,
@@ -83,22 +113,190 @@ const PackageCard: React.FC<PackageCardProps> = ({
     return classes;
   };
 
-  // Render a single info item
-  const renderInfoItem = (label: string, value: string, subValue?: string) => (
-    <div className="bg-[#fcf9f9] rounded-[5px] px-3 sm:px-4 py-2 sm:py-[0.6rem] border border-[rgba(92,1,32,0.04)] flex justify-between items-center gap-2">
-      <span className="text-[0.45rem] sm:text-[0.55rem] uppercase tracking-[0.14em] text-[#9a7e7e] font-semibold flex-shrink-0">
-        {label}
-      </span>
-      <span className="text-[0.7rem] sm:text-[0.8rem] font-semibold text-[#1e1212] text-right">
-        {value}
-        {subValue && (
+  // Helper function to render star rating
+  const renderStars = (rating: number) => {
+    return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+  };
+
+  // Supabase stores city names as "Makkah"/"Madinah" (and sometimes other
+  // spellings). Normalize these to the preferred display names.
+  const CITY_DISPLAY_MAP: Record<string, string> = {
+    makkah: 'Mecca',
+    mecca: 'Mecca',
+    madinah: 'Madina',
+    madina: 'Madina',
+    medina: 'Madina',
+  };
+  const normalizeCityName = (city: string) => {
+    const key = city.trim().toLowerCase();
+    return CITY_DISPLAY_MAP[key] || city;
+  };
+
+  const safeJsonParse = (value: string): any | null => {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    try {
+      return JSON.parse(trimmed);
+    } catch {
+      return null;
+    }
+  };
+
+  // Flights only render when there's actually something to show. The raw
+  // Supabase field is a JSON string like:
+  // {"notes": "", "return": "", "airline": "", "departure": ""}
+  // If every field is blank, we treat it as "no flight info" and hide the row.
+  const getFlightDisplay = (): { value: string; sub?: string } | null => {
+    if (!flight) return null;
+
+    let flightObj: FlightInfo | null = null;
+
+    if (typeof flight === 'string') {
+      const parsed = safeJsonParse(flight);
+      if (parsed && typeof parsed === 'object') {
+        flightObj = parsed;
+      } else {
+        // Plain string value (not JSON) - show as-is if non-empty
+        return flight.trim() ? { value: flight.trim() } : null;
+      }
+    } else if (typeof flight === 'object') {
+      flightObj = flight;
+    }
+
+    if (!flightObj) return null;
+
+    const { airline, departure, return: returnDate, notes } = flightObj;
+    const hasAnyValue = [airline, departure, returnDate, notes].some(
+      (v) => v && String(v).trim()
+    );
+    if (!hasAnyValue) return null;
+
+    const parts: string[] = [];
+    if (airline && airline.trim()) parts.push(airline.trim());
+    if (departure && departure.trim()) parts.push(`Dep ${departure.trim()}`);
+    if (returnDate && returnDate.trim()) parts.push(`Ret ${returnDate.trim()}`);
+
+    return {
+      value: parts.length > 0 ? parts.join(' • ') : 'Flight included',
+      sub: notes && notes.trim() ? notes.trim() : undefined,
+    };
+  };
+
+  // Transport, unlike flights, is treated as a standard package inclusion.
+  // If the underlying data is empty, we still show the row but fall back to
+  // a generic "Catered For" value rather than hiding it.
+  const getTransportDisplay = (): { value: string; sub?: string } | null => {
+    if (!transport) return null;
+
+    let transportObj: TransportInfo | null = null;
+
+    if (typeof transport === 'string') {
+      const parsed = safeJsonParse(transport);
+      if (parsed && typeof parsed === 'object') {
+        transportObj = parsed;
+      } else {
+        return { value: transport.trim() || 'Catered For' };
+      }
+    } else if (typeof transport === 'object') {
+      transportObj = transport;
+    }
+
+    if (!transportObj) return { value: 'Catered For' };
+
+    const { type, description: transportDesc } = transportObj;
+    const value = (type && type.trim()) || 'Catered For';
+    const sub = transportDesc && transportDesc.trim() ? transportDesc.trim() : undefined;
+
+    return { value, sub };
+  };
+
+  const flightDisplay = getFlightDisplay();
+  const transportDisplay = getTransportDisplay();
+
+  // Normalize accommodation data - handles both array and empty cases.
+  // If nothing real is provided, we return an EMPTY array (no placeholder
+  // "Premium Accommodation" card) so the section simply doesn't render.
+  const getNormalizedAccommodation = (): Accommodation[] => {
+    // Nothing provided at all
+    if (!accommodation) {
+      return [];
+    }
+
+    // Already an array
+    if (Array.isArray(accommodation)) {
+      if (accommodation.length === 0) {
+        return [];
+      }
+      // Show up to 2 hotels (e.g. Makkah + Madinah)
+      return accommodation.slice(0, 2);
+    }
+
+    // Coming from Supabase as a JSON string
+    if (typeof accommodation === 'string') {
+      const trimmed = accommodation.trim();
+      if (!trimmed) return [];
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.slice(0, 2);
+        }
+        return [];
+      } catch (error) {
+        console.error('Error parsing accommodation:', error);
+        return [];
+      }
+    }
+
+    return [];
+  };
+
+  const normalizedAccommodation = getNormalizedAccommodation();
+  const hasAccommodation = normalizedAccommodation.length > 0;
+  const hasMultipleHotels = normalizedAccommodation.length > 1;
+
+  // Render accommodation items for portrait view
+  const renderAccommodationItems = () => {
+    if (!hasAccommodation) return null;
+
+    return normalizedAccommodation.map((item, index) => (
+      <div key={`${item.city}-${index}`} className="bg-[#fcf9f9] rounded-[5px] px-3 sm:px-4 py-2 sm:py-[0.6rem] border border-[rgba(92,1,32,0.04)] flex justify-between items-center gap-2">
+        <span className="text-[0.45rem] sm:text-[0.55rem] uppercase tracking-[0.14em] text-[#9a7e7e] font-semibold flex-shrink-0">
+          {normalizeCityName(item.city)}
+        </span>
+        <span className="text-[0.7rem] sm:text-[0.8rem] font-semibold text-[#1e1212] text-right">
+          {item.hotelName}
           <small className="block font-normal text-[0.5rem] sm:text-[0.6rem] text-[#6f5b5b]">
-            {subValue}
+            {renderStars(item.starRating)} {item.starRating} Star{item.starRating > 1 ? 's' : ''}
+            {item.description && ` • ${item.description}`}
           </small>
-        )}
-      </span>
-    </div>
-  );
+        </span>
+      </div>
+    ));
+  };
+
+  // Render accommodation items for landscape view - responsive grid
+  const renderAccommodationGrid = () => {
+    if (!hasAccommodation) return null;
+
+    return (
+      <div className={`grid ${hasMultipleHotels ? 'grid-cols-2' : 'grid-cols-1'} gap-1.5 sm:gap-2`}>
+        {normalizedAccommodation.map((item, index) => (
+          <div key={`${item.city}-${index}`} className="bg-[#fcf9f9] rounded-[5px] px-2 sm:px-3 py-1.5 sm:py-2 border border-[rgba(92,1,32,0.04)] flex flex-col">
+            <span className="text-[0.4rem] sm:text-[0.45rem] uppercase tracking-[0.14em] text-[#9a7e7e] font-semibold">
+              {normalizeCityName(item.city)}
+            </span>
+            <span className="text-[0.6rem] sm:text-[0.7rem] font-semibold text-[#1e1212] leading-relaxed">
+              {item.hotelName}
+              <small className="block font-normal text-[0.45rem] sm:text-[0.55rem] text-[#6f5b5b]">
+                {renderStars(item.starRating)} {item.starRating} Star{item.starRating > 1 ? 's' : ''}
+                {item.description && ` • ${item.description}`}
+              </small>
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   // Render includes tags
   const renderIncludes = () => {
@@ -148,9 +346,9 @@ const PackageCard: React.FC<PackageCardProps> = ({
 
       {/* Info Items */}
       <div className="flex flex-col gap-1.5 sm:gap-2 mb-4 sm:mb-6">
-        {flight && renderInfoItem('Flight', flight)}
-        {accommodation && renderInfoItem('Accommodation', accommodation, accommodationSub)}
-        {transport && renderInfoItem('Transport', transport)}
+        {flightDisplay && renderInfoItem('Flight', flightDisplay.value, flightDisplay.sub)}
+        {renderAccommodationItems()}
+        {transportDisplay && renderInfoItem(transportType, transportDisplay.value, transportDisplay.sub)}
       </div>
 
       {/* Includes */}
@@ -164,6 +362,23 @@ const PackageCard: React.FC<PackageCardProps> = ({
         {actionElement}
       </div>
     </article>
+  );
+
+  // Helper for rendering single info item (used for flight and transport)
+  const renderInfoItem = (label: string, value: string, subValue?: string) => (
+    <div className="bg-[#fcf9f9] rounded-[5px] px-3 sm:px-4 py-2 sm:py-[0.6rem] border border-[rgba(92,1,32,0.04)] flex justify-between items-center gap-2">
+      <span className="text-[0.45rem] sm:text-[0.55rem] uppercase tracking-[0.14em] text-[#9a7e7e] font-semibold flex-shrink-0">
+        {label}
+      </span>
+      <span className="text-[0.7rem] sm:text-[0.8rem] font-semibold text-[#1e1212] text-right">
+        {value}
+        {subValue && (
+          <small className="block font-normal text-[0.5rem] sm:text-[0.6rem] text-[#6f5b5b]">
+            {subValue}
+          </small>
+        )}
+      </span>
+    </div>
   );
 
   // Landscape Card
@@ -192,39 +407,37 @@ const PackageCard: React.FC<PackageCardProps> = ({
         )}
 
         {/* Info Grid */}
-        <div className="grid grid-cols-2 gap-1.5 sm:gap-2 gap-x-2 sm:gap-x-3 mb-3 sm:mb-5">
-          {flight && (
-            <div className="bg-[#fcf9f9] rounded-[5px] px-2 sm:px-3 py-1.5 sm:py-2 border border-[rgba(92,1,32,0.04)] flex flex-col">
+        <div className="mb-3 sm:mb-5">
+          {flightDisplay && (
+            <div className="bg-[#fcf9f9] rounded-[5px] px-2 sm:px-3 py-1.5 sm:py-2 border border-[rgba(92,1,32,0.04)] flex flex-col mb-1.5 sm:mb-2">
               <span className="text-[0.4rem] sm:text-[0.45rem] uppercase tracking-[0.14em] text-[#9a7e7e] font-semibold">
                 Flight
               </span>
               <span className="text-[0.6rem] sm:text-[0.7rem] font-semibold text-[#1e1212] leading-relaxed">
-                {flight}
-              </span>
-            </div>
-          )}
-          {accommodation && (
-            <div className="bg-[#fcf9f9] rounded-[5px] px-2 sm:px-3 py-1.5 sm:py-2 border border-[rgba(92,1,32,0.04)] flex flex-col">
-              <span className="text-[0.4rem] sm:text-[0.45rem] uppercase tracking-[0.14em] text-[#9a7e7e] font-semibold">
-                Accommodation
-              </span>
-              <span className="text-[0.6rem] sm:text-[0.7rem] font-semibold text-[#1e1212] leading-relaxed">
-                {accommodation}
-                {accommodationSub && (
+                {flightDisplay.value}
+                {flightDisplay.sub && (
                   <small className="block font-normal text-[0.45rem] sm:text-[0.55rem] text-[#6f5b5b]">
-                    {accommodationSub}
+                    {flightDisplay.sub}
                   </small>
                 )}
               </span>
             </div>
           )}
-          {transport && (
-            <div className="bg-[#fcf9f9] rounded-[5px] px-2 sm:px-3 py-1.5 sm:py-2 border border-[rgba(92,1,32,0.04)] flex flex-col">
+
+          {renderAccommodationGrid()}
+
+          {transportDisplay && (
+            <div className="bg-[#fcf9f9] rounded-[5px] px-2 sm:px-3 py-1.5 sm:py-2 border border-[rgba(92,1,32,0.04)] flex flex-col mt-1.5 sm:mt-2">
               <span className="text-[0.4rem] sm:text-[0.45rem] uppercase tracking-[0.14em] text-[#9a7e7e] font-semibold">
-                Transport
+                {transportType}
               </span>
               <span className="text-[0.6rem] sm:text-[0.7rem] font-semibold text-[#1e1212] leading-relaxed">
-                {transport}
+                {transportDisplay.value}
+                {transportDisplay.sub && (
+                  <small className="block font-normal text-[0.45rem] sm:text-[0.55rem] text-[#6f5b5b]">
+                    {transportDisplay.sub}
+                  </small>
+                )}
               </span>
             </div>
           )}
@@ -247,15 +460,12 @@ const PackageCard: React.FC<PackageCardProps> = ({
   // Responsive rendering
   if (responsive) {
     if (isPortrait) {
-      // Portrait on all screens
       return <PortraitCard />;
     } else {
-      // Landscape on all screens
       return <LandscapeCard />;
     }
   }
 
-  // Non-responsive (original behavior)
   return isPortrait ? <PortraitCard /> : <LandscapeCard />;
 };
 

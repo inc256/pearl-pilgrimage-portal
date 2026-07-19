@@ -60,9 +60,12 @@ const UmrahPackagesCarousel = () => {
                   price={pkg.price ? formatPrice(Number(pkg.price)) : 'Contact'}
                   typeLabel="Umrah"
                   description={transformed.description}
-                  flight={transformed.flight.airline}
-                  accommodation={`${transformed.hotels.makkah.name} / ${transformed.hotels.madinah.name}`}
-                  transport={transformed.transport}
+                  // Pass the raw Supabase JSON straight through - PackageCard
+                  // parses flights/accommodations/transportation itself, hides
+                  // the flight row when empty, and shows per-hotel star ratings.
+                  flight={pkg.flights}
+                  accommodation={pkg.accommodations}
+                  transport={pkg.transportation}
                   includes={transformed.includes.slice(0, 4)}
                   ctaHref={`/booking?packageId=${String(pkg.id)}`}
                   orientation="portrait"
