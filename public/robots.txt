@@ -1,14 +1,19 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
+Allow: /
+Allow: /#/booking
+Allow: /#/hajj
+Allow: /#/umrah
+Allow: /#/gallery
+Allow: /#/blogs
+Allow: /#/contact
+Allow: /#/faq
+Disallow: /#/admin
+Disallow: /#/dashboard
+
+Sitemap: https://www.pearlhijjaandumrah.com/sitemap.xml
+Sitemap: https://www.pearlhijjaandumrah.com/image-sitemap.xml
+
+# Crawl-delay: 1
+# For AI crawlers
+User-agent: ChatGPT
 Allow: /
