@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import heroOne from "@/assets/Hero/hero1.jpg";
 import heroTwo from "@/assets/Hero/hero2.jpg";
 import heroThree from "@/assets/Hero/hero3.jpg";
@@ -66,8 +66,20 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
     return () => window.clearInterval(interval);
   }, []);
 
+  const scrollToNextSection = () => {
+    const nextSection = document.getElementById('next-section');
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({
+        top: window.innerHeight,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
-    <section className="relative min-h-screen overflow-hidden fade-slide">
+    <section className="relative h-screen w-full overflow-hidden fade-slide">
       {/* Style tag to force override any global border-radius */}
       <style>
         {`
@@ -125,7 +137,7 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
       </button>
 
       {/* Content - positioned towards bottom with flex-end */}
-      <div className="relative z-10 flex min-h-screen flex-col justify-end px-4 pb-20 sm:px-6 lg:px-8">
+      <div className="relative z-10 flex h-full flex-col justify-end px-4 pb-24 sm:pb-28 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-5xl text-center">
           <h1 
             className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-white leading-tight md:leading-tight slide-right"
@@ -186,7 +198,7 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
             </Button>
           </div>
 
-          {/* Slide indicator dots */}
+          {/* Slide indicator dots - positioned higher with more bottom padding */}
           <div className="mt-8 sm:mt-10 flex justify-center gap-2 sm:gap-3">
             {slides.map((_, index) => (
               <button
@@ -203,6 +215,18 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Scroll Indicator - centered horizontally with left-1/2 transform */}
+      <div className="absolute bottom-4 sm:bottom-6 left-1/2 z-20 -translate-x-1/2">
+        <button
+          onClick={scrollToNextSection}
+          className="flex flex-col items-center gap-1 text-white/70 hover:text-white transition-colors"
+          aria-label="Scroll down"
+        >
+          <span className="text-[10px] sm:text-xs font-medium tracking-wider uppercase">Scroll</span>
+          <ChevronDown className="h-5 w-5 sm:h-6 sm:w-6 animate-bounce" />
+        </button>
       </div>
     </section>
   );
