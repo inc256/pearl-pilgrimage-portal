@@ -24,6 +24,7 @@ const BookingForm = () => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [numberOfTravelers, setNumberOfTravelers] = useState(1);
+  const [displayTravelers, setDisplayTravelers] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -47,6 +48,7 @@ const BookingForm = () => {
         setPhone(parsed.phone || "");
         setEmail(parsed.email || "");
         setNumberOfTravelers(parsed.numberOfTravelers || 1);
+        setDisplayTravelers(parsed.numberOfTravelers ? String(parsed.numberOfTravelers) : "");
         setPaymentMethod(parsed.paymentMethod || "Bank Deposit");
         if (parsed.packageId) setPackageId(parsed.packageId);
       } catch (e) {
@@ -113,7 +115,7 @@ const BookingForm = () => {
     switch(field) {
       case 'firstName':
       case 'lastName':
-        if (!value.trim()) return `${field === 'firstName' ? 'First' : 'Second'} name is required`;
+        if (!value.trim()) return `${field === 'firstName' ? 'First' : 'Last'} name is required`;
         if (value.trim().length < 2) return 'Must be at least 2 characters';
         return '';
       case 'phone':
@@ -128,8 +130,10 @@ const BookingForm = () => {
         }
         return '';
       case 'numberOfTravelers':
-        if (parseInt(value) < 1 || parseInt(value) > 20) {
-          return 'Must be between 1 and 20';
+        if (value === '') return ''; // Allow empty value during typing
+        const num = parseInt(value);
+        if (isNaN(num) || num < 1 || num > 99) {
+          return 'Must be between 1 and 99';
         }
         return '';
       default:
@@ -155,12 +159,57 @@ const BookingForm = () => {
     else if (field === 'lastName') setLastName(value as string);
     else if (field === 'phone') setPhone(value as string);
     else if (field === 'email') setEmail(value as string);
-    else if (field === 'numberOfTravelers') setNumberOfTravelers(value as number);
+    else if (field === 'numberOfTravelers') {
+      const numValue = value as number;
+      setNumberOfTravelers(numValue);
+      setDisplayTravelers(numValue.toString());
+    }
     else if (field === 'paymentMethod') setPaymentMethod(value as string);
     else if (field === 'packageId') setPackageId(value as string);
     
     const error = validateField(field, String(value));
     setErrors({ ...errors, [field]: error });
+  };
+
+  const handleTravelersChange = (value: string) => {
+    setTouched({ ...touched, numberOfTravelers: true });
+    setDisplayTravelers(value);
+    
+    if (value === '') {
+      // When empty, keep the number of travelers as 1 but show empty field
+      setNumberOfTravelers(1);
+      setErrors({ ...errors, numberOfTravelers: '' });
+    } else {
+      const numValue = parseInt(value);
+      if (!isNaN(numValue) && numValue >= 1 && numValue <= 99) {
+        setNumberOfTravelers(numValue);
+        const error = validateField('numberOfTravelers', value);
+        setErrors({ ...errors, numberOfTravelers: error });
+      } else if (numValue > 99) {
+        setErrors({ ...errors, numberOfTravelers: 'Must be between 1 and 99' });
+      }
+    }
+  };
+
+  const handleTravelersBlur = () => {
+    setTouched({ ...touched, numberOfTravelers: true });
+    if (displayTravelers === '') {
+      setDisplayTravelers('');
+      setNumberOfTravelers(1);
+      setErrors({ ...errors, numberOfTravelers: '' });
+    } else {
+      const numValue = parseInt(displayTravelers);
+      if (isNaN(numValue) || numValue < 1) {
+        setDisplayTravelers('');
+        setNumberOfTravelers(1);
+        setErrors({ ...errors, numberOfTravelers: '' });
+      } else if (numValue > 99) {
+        setErrors({ ...errors, numberOfTravelers: 'Must be between 1 and 99' });
+      } else {
+        const error = validateField('numberOfTravelers', displayTravelers);
+        setErrors({ ...errors, numberOfTravelers: error });
+      }
+    }
   };
 
   const handleBlur = (field: string) => {
@@ -179,6 +228,7 @@ const BookingForm = () => {
     setPhone("");
     setEmail("");
     setNumberOfTravelers(1);
+    setDisplayTravelers("");
     setPaymentMethod("Bank Deposit");
     setPackageId(packages && packages.length > 0 ? String(packages[0].id) : "");
     setErrors({});
@@ -189,6 +239,11 @@ const BookingForm = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
+
+    // Ensure we have a valid number before submitting
+    if (displayTravelers === '') {
+      setNumberOfTravelers(1);
+    }
 
     if (!validateForm()) {
       toast({
@@ -490,10 +545,11 @@ const BookingForm = () => {
                           id="travelers"
                           type="number"
                           min="1"
-                          max="20"
-                          value={numberOfTravelers}
-                          onChange={(e) => handleFieldChange('numberOfTravelers', parseInt(e.target.value) || 1)}
-                          onBlur={() => handleBlur('numberOfTravelers')}
+                          max="99"
+                          value={displayTravelers}
+                          placeholder="1"
+                          onChange={(e) => handleTravelersChange(e.target.value)}
+                          onBlur={handleTravelersBlur}
                           className={`pl-9 h-11 ${touched.numberOfTravelers && errors.numberOfTravelers ? 'border-red-500' : ''}`}
                         />
                       </div>
