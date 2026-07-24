@@ -170,7 +170,7 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
   return (
     <section 
       ref={sectionRef}
-      className="relative h-screen w-full overflow-hidden fade-slide select-none"
+      className="relative h-[100dvh] w-full overflow-hidden fade-slide select-none"
       onMouseMove={handleMouseMove}
       onTouchStart={handleTouchStart}
       onTouchStartCapture={handleTouchStartSwipe}
@@ -207,6 +207,50 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
             pointer-events: auto;
             transform: scale(1);
           }
+
+          @media (max-height: 700px) {
+            .hero-content {
+              padding-bottom: 5rem !important;
+            }
+            .hero-title {
+              font-size: 1.5rem !important;
+              line-height: 1.3 !important;
+            }
+            .hero-subtitle {
+              font-size: 0.875rem !important;
+              margin-top: 0.5rem !important;
+            }
+            .hero-buttons {
+              margin-top: 1rem !important;
+              gap: 0.5rem !important;
+            }
+            .hero-dots {
+              margin-top: 0.75rem !important;
+            }
+          }
+
+          @media (max-height: 600px) {
+            .hero-content {
+              padding-bottom: 3.5rem !important;
+            }
+            .hero-title {
+              font-size: 1.25rem !important;
+            }
+            .hero-subtitle {
+              font-size: 0.75rem !important;
+            }
+            .hero-buttons {
+              margin-top: 0.5rem !important;
+            }
+            .hero-dots {
+              margin-top: 0.5rem !important;
+              gap: 0.5rem !important;
+            }
+            .hero-dots button {
+              height: 0.375rem !important;
+              width: 1.5rem !important;
+            }
+          }
         `}
       </style>
 
@@ -235,29 +279,29 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
       {/* Navigation Arrows - with auto-hide */}
       <button
         onClick={goToPrevious}
-        className={`absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/20 p-3 text-white backdrop-blur-sm transition-all hover:bg-white/40 hover:scale-110 lg:left-8 controls-transition ${
+        className={`absolute left-2 sm:left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/20 p-2 sm:p-3 text-white backdrop-blur-sm transition-all hover:bg-white/40 hover:scale-110 lg:left-8 controls-transition ${
           showControls ? 'controls-visible' : 'controls-hidden'
         }`}
         aria-label="Previous slide"
       >
-        <ChevronLeft className="h-6 w-6" />
+        <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
       </button>
 
       <button
         onClick={goToNext}
-        className={`absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/20 p-3 text-white backdrop-blur-sm transition-all hover:bg-white/40 hover:scale-110 lg:right-8 controls-transition ${
+        className={`absolute right-2 sm:right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/20 p-2 sm:p-3 text-white backdrop-blur-sm transition-all hover:bg-white/40 hover:scale-110 lg:right-8 controls-transition ${
           showControls ? 'controls-visible' : 'controls-hidden'
         }`}
         aria-label="Next slide"
       >
-        <ChevronRight className="h-6 w-6" />
+        <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
       </button>
 
       {/* Content - positioned towards bottom with flex-end */}
-      <div className="relative z-10 flex h-full flex-col justify-end px-4 pb-24 sm:pb-28 sm:px-6 lg:px-8">
+      <div className="hero-content relative z-10 flex h-full flex-col justify-end px-3 sm:px-4 pb-20 sm:pb-24 md:pb-28 lg:px-8">
         <div className="mx-auto w-full max-w-5xl text-center">
           <h1 
-            className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-white leading-tight md:leading-tight slide-right"
+            className="hero-title font-heading text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-semibold tracking-tight text-white leading-tight md:leading-tight slide-right"
             style={{
               textShadow: '0 2px 30px rgba(92,1,32,0.5), 0 4px 50px rgba(92,1,32,0.35), 0 8px 70px rgba(0,0,0,0.4), 0 12px 90px rgba(0,0,0,0.2)'
             }}
@@ -265,7 +309,7 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
             {slide.title}
           </h1>
           <p 
-            className="mx-auto mt-4 max-w-2xl text-sm sm:text-base lg:text-lg leading-7 sm:leading-8 text-white/95 slide-right"
+            className="hero-subtitle mx-auto mt-3 sm:mt-4 max-w-2xl text-xs sm:text-sm md:text-base lg:text-lg leading-6 sm:leading-7 md:leading-8 text-white/95 slide-right"
             style={{
               textShadow: '0 2px 20px rgba(92,1,32,0.4), 0 4px 30px rgba(92,1,32,0.25), 0 6px 40px rgba(0,0,0,0.3)'
             }}
@@ -275,33 +319,34 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
 
           {/* Location link for slide 5 - shown only on the office slide */}
           {current === 4 && (
-            <div className="mt-3 flex justify-center">
+            <div className="mt-2 sm:mt-3 flex justify-center">
               <a 
                 href="https://maps.app.goo.gl/esYLE53h6KW7Et4q6" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-white/95 hover:text-white transition-colors text-xs sm:text-sm bg-black/25 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/20 hover:bg-black/35"
+                className="inline-flex items-center gap-1.5 sm:gap-2 text-white/95 hover:text-white transition-colors text-[10px] sm:text-xs md:text-sm bg-black/25 backdrop-blur-sm px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded-full border border-white/20 hover:bg-black/35"
                 style={{
                   textShadow: '0 1px 12px rgba(0,0,0,0.4)'
                 }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-3.5 sm:h-3.5 md:w-4 md:h-4">
                   <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
                   <circle cx="12" cy="10" r="3"/>
                 </svg>
-                Liberty Tower Kampala Road, Room L4B09
+                <span className="hidden xs:inline">Liberty Tower Kampala Road, Room L4B09</span>
+                <span className="xs:hidden">Liberty Tower, Rm L4B09</span>
               </a>
             </div>
           )}
 
           {/* CTA Buttons */}
-          <div className="mt-6 sm:mt-8 flex flex-col items-center justify-center gap-3 sm:gap-4 sm:flex-row scale-reveal">
+          <div className="hero-buttons mt-4 sm:mt-6 md:mt-8 flex flex-col items-center justify-center gap-2 sm:gap-3 md:gap-4 sm:flex-row scale-reveal">
             {onBookNow ? (
-              <Button onClick={onBookNow} size="lg" className="bg-[#5C0120] text-white hover:bg-[#4a0019] px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base shadow-lg hover:shadow-xl transition-all min-w-[140px] sm:min-w-[160px]">
+              <Button onClick={onBookNow} size="lg" className="bg-[#5C0120] text-white hover:bg-[#4a0019] px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 text-xs sm:text-sm md:text-base shadow-lg hover:shadow-xl transition-all min-w-[100px] sm:min-w-[140px] md:min-w-[160px] h-auto">
                 Book Now
               </Button>
             ) : (
-              <Button asChild size="lg" className="bg-[#5C0120] text-white hover:bg-[#4a0019] px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base shadow-lg hover:shadow-xl transition-all min-w-[140px] sm:min-w-[160px]">
+              <Button asChild size="lg" className="bg-[#5C0120] text-white hover:bg-[#4a0019] px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 text-xs sm:text-sm md:text-base shadow-lg hover:shadow-xl transition-all min-w-[100px] sm:min-w-[140px] md:min-w-[160px] h-auto">
                 <Link to="/booking">Book Now</Link>
               </Button>
             )}
@@ -309,19 +354,19 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
               asChild 
               variant="outline" 
               size="lg" 
-              className="border-[#5C0120] bg-white text-[#5C0120] hover:bg-[#5C0120] hover:text-white hover:border-[#5C0120] px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base shadow-lg hover:shadow-xl transition-all duration-300 min-w-[140px] sm:min-w-[160px]"
+              className="border-[#5C0120] bg-white text-[#5C0120] hover:bg-[#5C0120] hover:text-white hover:border-[#5C0120] px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 text-xs sm:text-sm md:text-base shadow-lg hover:shadow-xl transition-all duration-300 min-w-[100px] sm:min-w-[140px] md:min-w-[160px] h-auto"
             >
               <Link to="/contact">Contact</Link>
             </Button>
           </div>
 
           {/* Slide indicator dots - positioned higher with more bottom padding */}
-          <div className="mt-8 sm:mt-10 flex justify-center gap-2 sm:gap-3">
+          <div className="hero-dots mt-4 sm:mt-6 md:mt-8 lg:mt-10 flex justify-center gap-1.5 sm:gap-2 md:gap-3">
             {slides.map((_, index) => (
               <button
                 key={index}
                 type="button"
-                className={`h-2 w-8 sm:h-2.5 sm:w-10 rounded-full transition-all duration-300 ${
+                className={`h-1.5 w-6 sm:h-2 sm:w-8 md:h-2.5 md:w-10 rounded-full transition-all duration-300 ${
                   index === current 
                     ? "bg-white scale-110" 
                     : "bg-white/30 hover:bg-white/70"
@@ -337,15 +382,15 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
         </div>
       </div>
 
-      {/* Scroll Indicator - centered horizontally with left-1/2 transform */}
-      <div className="absolute bottom-4 sm:bottom-6 left-1/2 z-20 -translate-x-1/2">
+      {/* Scroll Indicator - always visible with better positioning */}
+      <div className="absolute bottom-2 sm:bottom-3 md:bottom-4 lg:bottom-6 left-1/2 z-20 -translate-x-1/2 pointer-events-none">
         <button
           onClick={scrollToNextSection}
-          className="flex flex-col items-center gap-1 text-white/70 hover:text-white transition-colors"
+          className="pointer-events-auto flex flex-col items-center gap-0.5 sm:gap-1 text-white/70 hover:text-white transition-colors"
           aria-label="Scroll down"
         >
-          <span className="text-[10px] sm:text-xs font-medium tracking-wider uppercase">Scroll</span>
-          <ChevronDown className="h-5 w-5 sm:h-6 sm:w-6 animate-bounce" />
+          <span className="text-[8px] sm:text-[10px] md:text-xs font-medium tracking-wider uppercase opacity-80">Scroll</span>
+          <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 animate-bounce" />
         </button>
       </div>
     </section>
