@@ -58,7 +58,6 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
   useEffect(() => {
     const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     setIsTouchDevice(hasTouch);
-    // On touch devices, show controls initially
     setShowControls(hasTouch);
   }, []);
 
@@ -86,12 +85,10 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
     resetControlsTimeout();
   };
 
-  // Handle touch events on the section
   const handleTouchStart = () => {
     resetControlsTimeout();
   };
 
-  // Handle mouse movement on desktop
   const handleMouseMove = () => {
     if (!isTouchDevice) {
       resetControlsTimeout();
@@ -113,7 +110,6 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
     const diffX = touchStartX - touchEndX;
     const diffY = touchStartY - touchEndY;
 
-    // Only trigger if horizontal swipe is more significant than vertical
     if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
       if (diffX > 0) {
         goToNext();
@@ -180,6 +176,25 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
       {/* Style tag to force override any global border-radius */}
       <style>
         {`
+          .hero-image-container {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            will-change: transform;
+          }
+          
+          .hero-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            will-change: opacity;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+          }
+          
           .hero-image-container,
           .hero-image-container img,
           .hero-image-container > * {
@@ -206,6 +221,21 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
             opacity: 1;
             pointer-events: auto;
             transform: scale(1);
+          }
+
+          /* Scroll indicator visibility */
+          .scroll-indicator {
+            opacity: 0.85;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+          }
+          
+          .scroll-indicator:hover {
+            opacity: 1;
+            transform: scale(1.05);
+          }
+
+          .scroll-indicator .chevron {
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
           }
 
           @media (max-height: 700px) {
@@ -251,35 +281,37 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
               width: 1.5rem !important;
             }
           }
+
+          /* Ensure image container maintains aspect ratio */
+          .hero-image-wrapper {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+          }
         `}
       </style>
 
-      {/* Image container with class for CSS override */}
-      <div className="hero-image-container absolute inset-0 overflow-hidden">
-        <img 
-          src={slide.image} 
-          alt={slide.title}
-          className="h-full w-full object-cover transition-opacity duration-1000"
-          style={{
-            borderRadius: '0 !important',
-            borderTopLeftRadius: '0 !important',
-            borderTopRightRadius: '0 !important',
-            borderBottomLeftRadius: '0 !important',
-            borderBottomRightRadius: '0 !important',
-            WebkitBorderRadius: '0 !important',
-            MozBorderRadius: '0 !important',
-          }}
-        />
+      {/* Image container with hardware acceleration */}
+      <div className="hero-image-wrapper">
+        <div className="hero-image-container">
+          <img 
+            src={slide.image} 
+            alt={slide.title}
+            className="h-full w-full object-cover transition-opacity duration-1000"
+            loading="eager"
+            draggable="false"
+          />
+        </div>
       </div>
       
       {/* Overlays for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/5 to-black/60" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(92,1,32,0.20),_transparent_50%),radial-gradient(circle_at_bottom_right,_rgba(92,1,32,0.15),_transparent_45%)]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/5 to-black/60 pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(92,1,32,0.20),_transparent_50%),radial-gradient(circle_at_bottom_right,_rgba(92,1,32,0.15),_transparent_45%)] pointer-events-none" />
 
       {/* Navigation Arrows - with auto-hide */}
       <button
         onClick={goToPrevious}
-        className={`absolute left-2 sm:left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/20 p-2 sm:p-3 text-white backdrop-blur-sm transition-all hover:bg-white/40 hover:scale-110 lg:left-8 controls-transition ${
+        className={`absolute left-2 sm:left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/30 hover:bg-black/50 p-2 sm:p-3 text-white backdrop-blur-sm transition-all hover:scale-110 controls-transition ${
           showControls ? 'controls-visible' : 'controls-hidden'
         }`}
         aria-label="Previous slide"
@@ -289,7 +321,7 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
 
       <button
         onClick={goToNext}
-        className={`absolute right-2 sm:right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/20 p-2 sm:p-3 text-white backdrop-blur-sm transition-all hover:bg-white/40 hover:scale-110 lg:right-8 controls-transition ${
+        className={`absolute right-2 sm:right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/30 hover:bg-black/50 p-2 sm:p-3 text-white backdrop-blur-sm transition-all hover:scale-110 controls-transition ${
           showControls ? 'controls-visible' : 'controls-hidden'
         }`}
         aria-label="Next slide"
@@ -324,7 +356,7 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
                 href="https://maps.app.goo.gl/esYLE53h6KW7Et4q6" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 sm:gap-2 text-white/95 hover:text-white transition-colors text-[10px] sm:text-xs md:text-sm bg-black/25 backdrop-blur-sm px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded-full border border-white/20 hover:bg-black/35"
+                className="inline-flex items-center gap-1.5 sm:gap-2 text-white/95 hover:text-white transition-colors text-[10px] sm:text-xs md:text-sm bg-black/30 backdrop-blur-sm px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded-full border border-white/20 hover:bg-black/40"
                 style={{
                   textShadow: '0 1px 12px rgba(0,0,0,0.4)'
                 }}
@@ -360,7 +392,7 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
             </Button>
           </div>
 
-          {/* Slide indicator dots - positioned higher with more bottom padding */}
+          {/* Slide indicator dots */}
           <div className="hero-dots mt-4 sm:mt-6 md:mt-8 lg:mt-10 flex justify-center gap-1.5 sm:gap-2 md:gap-3">
             {slides.map((_, index) => (
               <button
@@ -369,7 +401,7 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
                 className={`h-1.5 w-6 sm:h-2 sm:w-8 md:h-2.5 md:w-10 rounded-full transition-all duration-300 ${
                   index === current 
                     ? "bg-white scale-110" 
-                    : "bg-white/30 hover:bg-white/70"
+                    : "bg-white/40 hover:bg-white/70"
                 }`}
                 onClick={() => {
                   setCurrent(index);
@@ -382,15 +414,20 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
         </div>
       </div>
 
-      {/* Scroll Indicator - always visible with better positioning */}
-      <div className="absolute bottom-2 sm:bottom-3 md:bottom-4 lg:bottom-6 left-1/2 z-20 -translate-x-1/2 pointer-events-none">
+      {/* Scroll Indicator - improved visibility */}
+      <div className="absolute bottom-3 sm:bottom-4 md:bottom-5 lg:bottom-6 left-1/2 z-20 -translate-x-1/2 pointer-events-none">
         <button
           onClick={scrollToNextSection}
-          className="pointer-events-auto flex flex-col items-center gap-0.5 sm:gap-1 text-white/70 hover:text-white transition-colors"
+          className="scroll-indicator pointer-events-auto flex flex-col items-center gap-0.5 sm:gap-1 text-white transition-colors group"
           aria-label="Scroll down"
         >
-          <span className="text-[8px] sm:text-[10px] md:text-xs font-medium tracking-wider uppercase opacity-80">Scroll</span>
-          <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 animate-bounce" />
+          <span className="text-[8px] sm:text-[10px] md:text-xs font-medium tracking-[0.15em] uppercase opacity-90 group-hover:opacity-100 bg-black/30 backdrop-blur-sm px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-white/10">
+            Scroll
+          </span>
+          <div className="relative">
+            <div className="absolute inset-0 bg-white/20 blur-xl rounded-full scale-150 opacity-50 animate-pulse"></div>
+            <ChevronDown className="chevron h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 animate-bounce text-white drop-shadow-lg relative" />
+          </div>
         </button>
       </div>
     </section>
