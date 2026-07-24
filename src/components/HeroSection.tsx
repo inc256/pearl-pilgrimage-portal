@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
@@ -31,8 +31,8 @@ const slides = [
     image: heroFour,
   },
   {
-    title: "State-of-the-art facilities for your peace of mind",
-    subtitle: "Visit our modern offices at Liberty Tower Kampala Road, Room L4B09 where we plan and coordinate every detail of your sacred journey.",
+    title: "State-of-the-art facilities",
+    subtitle: "Visit our modern offices where we plan and coordinate every detail of your sacred journey.",
     image: heroFive,
   },
   {
@@ -48,22 +48,111 @@ interface HeroSectionProps {
 
 const HeroSection = ({ onBookNow }: HeroSectionProps) => {
   const [current, setCurrent] = useState(0);
+  const [showControls, setShowControls] = useState(true);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const slide = useMemo(() => slides[current], [current]);
+
+  // Detect if device supports touch
+  useEffect(() => {
+    const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    setIsTouchDevice(hasTouch);
+    // On touch devices, show controls initially
+    setShowControls(hasTouch);
+  }, []);
 
   const goToPrevious = () => {
     setCurrent((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+    resetControlsTimeout();
   };
 
   const goToNext = () => {
     setCurrent((prev) => (prev + 1) % slides.length);
+    resetControlsTimeout();
   };
 
+  const resetControlsTimeout = () => {
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+    setShowControls(true);
+    controlsTimeoutRef.current = setTimeout(() => {
+      setShowControls(false);
+    }, 3000);
+  };
+
+  const handleInteraction = () => {
+    resetControlsTimeout();
+  };
+
+  // Handle touch events on the section
+  const handleTouchStart = () => {
+    resetControlsTimeout();
+  };
+
+  // Handle mouse movement on desktop
+  const handleMouseMove = () => {
+    if (!isTouchDevice) {
+      resetControlsTimeout();
+    }
+  };
+
+  // Handle swipe gestures
+  let touchStartX = 0;
+  let touchStartY = 0;
+  
+  const handleTouchStartSwipe = (e: React.TouchEvent) => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  };
+
+  const handleTouchEndSwipe = (e: React.TouchEvent) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const diffX = touchStartX - touchEndX;
+    const diffY = touchStartY - touchEndY;
+
+    // Only trigger if horizontal swipe is more significant than vertical
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+      if (diffX > 0) {
+        goToNext();
+      } else {
+        goToPrevious();
+      }
+    }
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        goToPrevious();
+      } else if (e.key === 'ArrowRight') {
+        goToNext();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Auto-slide timer
   useEffect(() => {
     const interval = window.setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
     }, 7000);
 
     return () => window.clearInterval(interval);
+  }, []);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+      }
+    };
   }, []);
 
   const scrollToNextSection = () => {
@@ -79,7 +168,15 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
   };
 
   return (
-    <section className="relative h-screen w-full overflow-hidden fade-slide">
+    <section 
+      ref={sectionRef}
+      className="relative h-screen w-full overflow-hidden fade-slide select-none"
+      onMouseMove={handleMouseMove}
+      onTouchStart={handleTouchStart}
+      onTouchStartCapture={handleTouchStartSwipe}
+      onTouchEndCapture={handleTouchEndSwipe}
+      onClick={handleInteraction}
+    >
       {/* Style tag to force override any global border-radius */}
       <style>
         {`
@@ -93,6 +190,22 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
             border-bottom-right-radius: 0 !important;
             -webkit-border-radius: 0 !important;
             -moz-border-radius: 0 !important;
+          }
+          
+          .controls-transition {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+          }
+          
+          .controls-hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.9);
+          }
+          
+          .controls-visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
           }
         `}
       </style>
@@ -119,10 +232,12 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
       <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/5 to-black/60" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(92,1,32,0.20),_transparent_50%),radial-gradient(circle_at_bottom_right,_rgba(92,1,32,0.15),_transparent_45%)]" />
 
-      {/* Navigation Arrows */}
+      {/* Navigation Arrows - with auto-hide */}
       <button
         onClick={goToPrevious}
-        className="absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/20 p-3 text-white backdrop-blur-sm transition-all hover:bg-white/40 hover:scale-110 lg:left-8"
+        className={`absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/20 p-3 text-white backdrop-blur-sm transition-all hover:bg-white/40 hover:scale-110 lg:left-8 controls-transition ${
+          showControls ? 'controls-visible' : 'controls-hidden'
+        }`}
         aria-label="Previous slide"
       >
         <ChevronLeft className="h-6 w-6" />
@@ -130,7 +245,9 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
 
       <button
         onClick={goToNext}
-        className="absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/20 p-3 text-white backdrop-blur-sm transition-all hover:bg-white/40 hover:scale-110 lg:right-8"
+        className={`absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/20 p-3 text-white backdrop-blur-sm transition-all hover:bg-white/40 hover:scale-110 lg:right-8 controls-transition ${
+          showControls ? 'controls-visible' : 'controls-hidden'
+        }`}
         aria-label="Next slide"
       >
         <ChevronRight className="h-6 w-6" />
@@ -209,7 +326,10 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
                     ? "bg-white scale-110" 
                     : "bg-white/30 hover:bg-white/70"
                 }`}
-                onClick={() => setCurrent(index)}
+                onClick={() => {
+                  setCurrent(index);
+                  resetControlsTimeout();
+                }}
                 aria-label={`Slide ${index + 1}`}
               />
             ))}
