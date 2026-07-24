@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,6 +31,7 @@ const BookingForm = () => {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const { toast } = useToast();
+  const travelersInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!packageId && packages && packages.length > 0) {
@@ -171,6 +172,20 @@ const BookingForm = () => {
     setErrors({ ...errors, [field]: error });
   };
 
+  const handleTravelersFocus = () => {
+    // Clear the display value when user clicks into the field
+    setDisplayTravelers('');
+    setTouched({ ...touched, numberOfTravelers: true });
+    // If there's a value, select all text so typing replaces it
+    if (travelersInputRef.current) {
+      setTimeout(() => {
+        if (travelersInputRef.current) {
+          travelersInputRef.current.select();
+        }
+      }, 0);
+    }
+  };
+
   const handleTravelersChange = (value: string) => {
     setTouched({ ...touched, numberOfTravelers: true });
     setDisplayTravelers(value);
@@ -194,7 +209,7 @@ const BookingForm = () => {
   const handleTravelersBlur = () => {
     setTouched({ ...touched, numberOfTravelers: true });
     if (displayTravelers === '') {
-      setDisplayTravelers('');
+      // If field is empty on blur, keep it empty but maintain 1 as the actual value
       setNumberOfTravelers(1);
       setErrors({ ...errors, numberOfTravelers: '' });
     } else {
@@ -542,13 +557,19 @@ const BookingForm = () => {
                       <div className="relative mt-1.5">
                         <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
+                          ref={travelersInputRef}
                           id="travelers"
-                          type="number"
-                          min="1"
-                          max="99"
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
                           value={displayTravelers}
                           placeholder="1"
-                          onChange={(e) => handleTravelersChange(e.target.value)}
+                          onFocus={handleTravelersFocus}
+                          onChange={(e) => {
+                            // Only allow numbers
+                            const value = e.target.value.replace(/[^0-9]/g, '');
+                            handleTravelersChange(value);
+                          }}
                           onBlur={handleTravelersBlur}
                           className={`pl-9 h-11 ${touched.numberOfTravelers && errors.numberOfTravelers ? 'border-red-500' : ''}`}
                         />
