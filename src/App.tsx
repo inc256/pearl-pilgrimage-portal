@@ -12,6 +12,7 @@ import Packages from "./pages/Packages.tsx";
 import Hajj from "./pages/Hajj.tsx";
 import Umrah from "./pages/Umrah.tsx";
 import Booking from "./pages/Booking.tsx";
+import AdminBookings from "./pages/AdminBookings.tsx";
 import Gallery from "./pages/Gallery.tsx";
 import Blogs from "./pages/Blogs.tsx";
 import Contact from "./pages/Contact.tsx";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/hajj" element={<Hajj />} />
             <Route path="/umrah" element={<Umrah />} />
             <Route path="/booking" element={<Booking />} />
+            <Route path="/admin/bookings" element={<AdminBookings />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/blogs" element={<Blogs />} />
             <Route path="/contact" element={<Contact />} />

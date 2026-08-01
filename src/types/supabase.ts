@@ -207,6 +207,28 @@ export interface ContactMessage {
   created_at: string;
 }
 
+export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
+
+export interface PaymentMethod {
+  method: string;
+  details: any;
+}
+
+export interface Booking {
+  id: string; // uuid
+  package_id: number;
+  first_name: string;
+  second_name?: string | null;
+  travelers_no?: number | null;
+  total_amount?: number | null;
+  payment_method?: PaymentMethod | null;
+  booking_status?: BookingStatus;
+  booking_date?: string | null;
+  email?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface PackageDetails {
   package: Package;
   flights: Flight[];

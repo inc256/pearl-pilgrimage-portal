@@ -71,7 +71,7 @@ const Packages = () => {
                       accommodation={`${transformed.hotels.makkah.name} / ${transformed.hotels.madinah.name}`}
                       transport={transformed.transport}
                       includes={transformed.includes.slice(0, 4)}
-                      ctaHref={ctaHref}
+                      ctaHref={`/booking?packageId=${pkg.id}`}
                     />
                   );
                 })}
