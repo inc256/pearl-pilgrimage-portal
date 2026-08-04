@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, Mail, MapPin } from "lucide-react";
+import { Phone, MapPin } from "lucide-react";
 
 const ContactSection = () => {
   return (
@@ -21,13 +21,6 @@ const ContactSection = () => {
                 <p className="text-muted-foreground text-sm">0705447319</p>
                 <p className="text-muted-foreground text-sm">0702184524</p>
                 <p className="text-muted-foreground text-sm">0756505926</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Mail className="text-primary mt-1 shrink-0" size={20} />
-              <div>
-                <h4 className="font-semibold text-foreground">Email</h4>
-                <p className="text-muted-foreground text-sm">info@pearlhijja.com</p>
               </div>
             </div>
             {/* <div className="flex items-start gap-3">

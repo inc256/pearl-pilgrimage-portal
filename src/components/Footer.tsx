@@ -1,25 +1,6 @@
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
-import { useContactInfo } from "@/hooks/useSupabase";
-
-const iconMap: Record<string, React.ReactNode> = {
-  phone: <Phone className="h-4 w-4" />,
-  email: <Mail className="h-4 w-4" />,
-  address: <MapPin className="h-4 w-4" />,
-  hours: <Clock className="h-4 w-4" />,
-};
+import { Phone } from "lucide-react";
 
 const Footer = () => {
-  const { data: contactInfo } = useContactInfo();
-
-  const getContactByType = (type: string) => {
-    return contactInfo?.find(c => c.type === type);
-  };
-
-  const phone = getContactByType("phone");
-  const email = getContactByType("email");
-  const address = getContactByType("address");
-  const hours = getContactByType("hours");
-
   return (
     <footer className="bg-foreground text-primary-foreground py-12">
       <div className="container mx-auto px-4">
@@ -54,12 +35,6 @@ const Footer = () => {
                 <Phone className="h-4 w-4" />
                 <a href="tel:0756505926" className="hover:text-primary-foreground">0756505926</a>
               </li>
-              {email && (
-                <li className="flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  <span>{email.value}</span>
-                </li>
-              )}
             </ul>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { useAllPackages } from "@/hooks/useSupabase";
 import { Package } from "@/types/supabase";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { transformPackageForDisplay } from "@/lib/packageUtils";
+import { LoadingScreen } from "@/components/LoadingSpinner";
 
 const Packages = () => {
   const { data: packages, isLoading, error } = useAllPackages();
@@ -33,9 +34,7 @@ const Packages = () => {
             </div>
 
             {isLoading ? (
-              <div className="flex justify-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-              </div>
+              <LoadingScreen text="Loading packages..." />
             ) : error ? (
               <div className="text-center py-20">
                 <p className="text-red-500">Error loading packages. Please try again later.</p>

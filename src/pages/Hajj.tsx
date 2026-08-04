@@ -5,6 +5,7 @@ import PackageCard from "@/components/PackageCard";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useHajjPackages } from "@/hooks/useSupabase";
 import { transformPackageForDisplay } from "@/lib/packageUtils";
+import { LoadingScreen } from "@/components/LoadingSpinner";
 
 const Hajj = () => {
   const { data: packages, isLoading, error } = useHajjPackages();
@@ -29,9 +30,7 @@ const Hajj = () => {
         <section className="py-20 bg-background">
           <div className="container mx-auto px-4">
             {isLoading ? (
-              <div className="flex justify-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-              </div>
+              <LoadingScreen text="Loading Hajj packages..." />
             ) : error ? (
               <div className="text-center py-20">
                 <p className="text-red-500">Error loading Hajj packages. Please try again later.</p>

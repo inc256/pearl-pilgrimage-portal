@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HelpCircle, MessageCircle } from "lucide-react";
 import { useFaqs } from "@/hooks/useSupabase";
+import { LoadingScreen } from "@/components/LoadingSpinner";
 
 const FAQ = () => {
   const { data: faqs, isLoading, error } = useFaqs();
@@ -13,11 +14,8 @@ const FAQ = () => {
     return (
       <div className="min-h-screen">
         <Navbar />
-        <div className="pt-20 flex items-center justify-center min-h-[50vh]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading FAQs...</p>
-          </div>
+        <div className="pt-20">
+          <LoadingScreen text="Loading FAQs..." />
         </div>
         <Footer />
       </div>

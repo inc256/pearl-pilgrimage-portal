@@ -3,7 +3,6 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { 
   Phone, 
-  Mail, 
   MapPin, 
   Clock, 
   MessageCircle,
@@ -11,14 +10,15 @@ import {
 } from "lucide-react";
 import { useContactInfo } from "@/hooks/useSupabase";
 import { AlertCircle } from "lucide-react";
+import { LoadingScreen } from "@/components/LoadingSpinner";
 
 const Contact = () => {
   const { data: contactInfo, isLoading: contactLoading, error: contactError } = useContactInfo();
+  const visibleContactInfo = contactInfo?.filter((info) => info.type !== 'email');
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'phone': return <Phone className="text-primary" size={20} />;
-      case 'email': return <Mail className="text-primary" size={20} />;
       case 'address': return <MapPin className="text-primary" size={20} />;
       case 'hours': return <Clock className="text-primary" size={20} />;
       default: return <Phone className="text-primary" size={20} />;
@@ -69,9 +69,9 @@ const Contact = () => {
                     <AlertCircle className="inline mr-2" size={20} />
                     Error loading contact information. Please refresh the page.
                   </div>
-                ) : contactInfo && contactInfo.length > 0 ? (
+                ) : visibleContactInfo && visibleContactInfo.length > 0 ? (
                   <div className="space-y-6">
-                    {contactInfo.map((info) => (
+                    {visibleContactInfo.map((info) => (
                       <div key={info.id} className="flex items-start gap-4 group">
                         <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
                           {getIcon(info.icon || info.type || 'phone')}
@@ -106,18 +106,6 @@ const Contact = () => {
                       </div>
                     </div>
 
-                    {/* Email */}
-                    {/* <div className="flex items-start gap-4 group">
-                      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                        <Mail className="text-primary" size={20} />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-foreground mb-1">Email Address</h4>
-                        <a href="mailto:info@pearlhijja.com" className="text-muted-foreground hover:text-primary transition-colors">
-                          info@pearlhijja.com
-                        </a>
-                      </div>
-                    </div> */}
 
                     {/* Office Address */}
                     <div className="flex items-start gap-4 group">

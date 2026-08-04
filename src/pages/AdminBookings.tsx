@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { LoadingScreen } from "@/components/LoadingSpinner";
 
 const statusOptions: { value: BookingStatus; label: string }[] = [
   { value: "pending", label: "Pending" },
@@ -74,9 +75,7 @@ const AdminBookings = () => {
           </div>
 
           {isLoading ? (
-            <div className="flex justify-center py-16">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
-            </div>
+            <LoadingScreen text="Loading bookings..." />
           ) : error ? (
             <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-6 text-destructive">
               Failed to load bookings. Please check your database connection.

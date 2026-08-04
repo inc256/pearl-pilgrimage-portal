@@ -4,6 +4,7 @@ import { useGallery } from "@/hooks/useSupabase";
 import { useState, useEffect, useCallback } from "react";
 import { GalleryImage } from "@/types/supabase";
 import defaultVideoThumbnail from "/src/assets/Pearl Burganda.jpg";
+import { LoadingScreen } from "@/components/LoadingSpinner";
 
 const Gallery = () => {
   const { data: galleryImages, isLoading, error } = useGallery();
@@ -13,16 +14,16 @@ const Gallery = () => {
   const isVideo = (item: GalleryImage) => item.media_type === 'video';
 
   const getMediaUrl = (img: GalleryImage) => {
-    // Use image_url for both images and videos
+    if (isVideo(img)) {
+      return img.video_url || img.image_url || '/placeholder-image.jpg';
+    }
     return img.image_url || '/placeholder-image.jpg';
   };
 
   const getThumbnailUrl = (img: GalleryImage) => {
-    // For videos, use the default thumbnail
     if (isVideo(img)) {
-      return defaultVideoThumbnail;
+      return img.image_url?.trim() ? img.image_url : defaultVideoThumbnail;
     }
-    // For images, use the original image_url
     return img.image_url || '/placeholder-image.jpg';
   };
 
@@ -71,9 +72,8 @@ const Gallery = () => {
     return (
       <div className="min-h-screen">
         <Navbar />
-        <div className="pt-20 flex items-center justify-center min-h-[50vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading gallery...</p>
+        <div className="pt-20">
+          <LoadingScreen text="Loading gallery..." />
         </div>
         <Footer />
       </div>
@@ -282,23 +282,22 @@ const Gallery = () => {
 
             {/* Media content */}
             <div className="relative w-full min-h-[50vh] max-h-[90vh] flex items-center justify-center">
-              {isVideo(selectedMedia) ? (
+              {isVideo(selectedMedia) && selectedMedia.video_url ? (
                 <video
                   key={selectedMedia.id}
-                  src={getMediaUrl(selectedMedia)}
-                  poster={defaultVideoThumbnail}
+                  src={selectedMedia.video_url}
+                  poster={selectedMedia.image_url || defaultVideoThumbnail}
                   controls
                   autoPlay
                   playsInline
                   className="max-w-full max-h-[85vh] object-contain"
                   onError={(e) => {
                     const target = e.target as HTMLVideoElement;
-                    console.error('Video failed to load:', target.src);
                     target.style.display = 'none';
                     const parent = target.parentElement;
                     if (parent) {
                       const img = document.createElement('img');
-                      img.src = defaultVideoThumbnail;
+                      img.src = selectedMedia.image_url || defaultVideoThumbnail;
                       img.alt = selectedMedia.alt_text || selectedMedia.title || 'Gallery media';
                       img.className = 'max-w-full max-h-[85vh] object-contain';
                       parent.appendChild(img);
@@ -310,9 +309,9 @@ const Gallery = () => {
                     }
                   }}
                 >
-                  <source src={getMediaUrl(selectedMedia)} type="video/mp4" />
-                  <source src={getMediaUrl(selectedMedia)} type="video/webm" />
-                  <source src={getMediaUrl(selectedMedia)} type="video/ogg" />
+                  <source src={selectedMedia.video_url} type="video/mp4" />
+                  <source src={selectedMedia.video_url} type="video/webm" />
+                  <source src={selectedMedia.video_url} type="video/ogg" />
                   Your browser does not support the video tag.
                 </video>
               ) : (
