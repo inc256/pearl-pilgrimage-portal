@@ -6,10 +6,13 @@ import { GalleryImage } from "@/types/supabase";
 import defaultVideoThumbnail from "/src/assets/Pearl Burganda.jpg";
 import { LoadingScreen } from "@/components/LoadingSpinner";
 
+const GALLERY_BATCH_SIZE = 8;
+
 const Gallery = () => {
   const { data: galleryImages, isLoading, error } = useGallery();
   const [selectedMedia, setSelectedMedia] = useState<GalleryImage | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  const [visibleCount, setVisibleCount] = useState(GALLERY_BATCH_SIZE);
 
   const isVideo = (item: GalleryImage) => item.media_type === 'video';
 
@@ -142,7 +145,7 @@ const Gallery = () => {
         <section className="py-20 bg-background">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {galleryImages.map((image, index) => {
+              {galleryImages.slice(0, visibleCount).map((image, index) => {
                 const thumbnailUrl = getThumbnailUrl(image);
                 const mediaUrl = getMediaUrl(image);
                 const isVideoItem = isVideo(image);
@@ -154,6 +157,7 @@ const Gallery = () => {
                     onClick={() => handleOpenMedia(image, index)}
                     role="button"
                     tabIndex={0}
+                    style={{ contentVisibility: "auto", containIntrinsicSize: "auto 280px" }}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleOpenMedia(image, index); }}
                   >
                     {isVideoItem ? (
@@ -163,6 +167,7 @@ const Gallery = () => {
                           alt={image.alt_text || image.title || 'Gallery video thumbnail'}
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                           loading="lazy"
+                          decoding="async"
                           onError={(e) => {
                             const target = e.currentTarget;
                             if (target.src !== defaultVideoThumbnail && target.src !== '/placeholder-image.jpg') {
@@ -191,6 +196,7 @@ const Gallery = () => {
                           alt={image.alt_text || image.title || 'Gallery image'}
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                           loading="lazy"
+                          decoding="async"
                           onError={(e) => {
                             const target = e.currentTarget;
                             if (target.src !== '/placeholder-image.jpg') {
@@ -214,6 +220,17 @@ const Gallery = () => {
                 );
               })}
             </div>
+            {visibleCount < galleryImages.length && (
+              <div className="mt-10 text-center">
+                <button
+                  type="button"
+                  onClick={() => setVisibleCount((count) => count + GALLERY_BATCH_SIZE)}
+                  className="rounded-md bg-primary px-6 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                >
+                  Load more
+                </button>
+              </div>
+            )}
           </div>
         </section>
       </div>

@@ -3,11 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import heroOne from "@/assets/Hero/hero1.jpg";
-import heroTwo from "@/assets/Hero/hero2.jpg";
-import heroThree from "@/assets/Hero/hero3.jpg";
-import heroFour from "@/assets/Hero/hero4.jpeg";
+import heroTwo from "@/assets/Hero/hero2.webp";
+import heroThree from "@/assets/Hero/hero3.webp";
+import heroFour from "@/assets/Hero/hero4.webp";
 import heroFive from "@/assets/Hero/hero5.webp";
-import heroSix from "@/assets/Hero/hero6.jpg";
+import heroSix from "@/assets/Hero/hero6.webp";
+
+const HERO_SLIDE_INTERVAL_MS = 15000;
 
 const slides = [
   {
@@ -16,13 +18,13 @@ const slides = [
     image: heroOne,
   },
   {
-    title: "Professional media coverage for your spiritual journey",
-    subtitle: "Our dedicated media team captures every sacred moment, preserving your pilgrimage memories forever.",
+    title: "Capturing the IUIU Run for a Girl Child 5th Anniversary",
+    subtitle: "Our dedicated media team takes your group pictures and captures every memorable moment of the celebration.",
     image: heroTwo,
   },
   {
     title: "Your trusted team of pilgrimage specialists",
-    subtitle: "A dedicated team of professionals committed to making your Hajj and Umrah experience seamless and memorable.",
+    subtitle: "Our team of professionals had an amazing time at the IUIU Run for a Girl Child 5th anniversary. Here's to seamless Hajj and Umrah journeys!",
     image: heroThree,
   },
   {
@@ -36,11 +38,30 @@ const slides = [
     image: heroFive,
   },
   {
-    title: "Strategic planning for your perfect pilgrimage",
-    subtitle: "Our team collaborates tirelessly to ensure every aspect of your journey exceeds expectations.",
+    title: "Proud sponsors of the IUIU Run for a Girl Child 5th anniversary",
+    subtitle: "Our team collaborates tirelessly with attendants to ensure every aspect of the run exceeds expectations.",
     image: heroSix,
   }
 ];
+
+const heroImagePreloads = new Map<number, { image: HTMLImageElement; promise: Promise<void> }>();
+
+const preloadHeroImage = (index: number) => {
+  const existing = heroImagePreloads.get(index);
+  if (existing) return existing.promise;
+
+  const image = new Image();
+  image.decoding = "async";
+  image.fetchPriority = "low";
+  image.src = slides[index].image;
+
+  const promise = image.decode().then(() => undefined).catch((error: unknown) => {
+    heroImagePreloads.delete(index);
+    throw error;
+  });
+  heroImagePreloads.set(index, { image, promise });
+  return promise;
+};
 
 interface HeroSectionProps {
   onBookNow?: () => void;
@@ -48,9 +69,13 @@ interface HeroSectionProps {
 
 const HeroSection = ({ onBookNow }: HeroSectionProps) => {
   const [current, setCurrent] = useState(0);
+  const [previous, setPrevious] = useState<number | null>(null);
+  const [isCurrentImageLoaded, setIsCurrentImageLoaded] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const currentIndexRef = useRef(0);
+  const transitionRequestRef = useRef(0);
   const sectionRef = useRef<HTMLElement>(null);
   const slide = useMemo(() => slides[current], [current]);
 
@@ -61,13 +86,26 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
     setShowControls(hasTouch);
   }, []);
 
+  const transitionToSlide = (nextIndex: number) => {
+    if (nextIndex === currentIndexRef.current) return;
+    const requestId = ++transitionRequestRef.current;
+
+    void preloadHeroImage(nextIndex).then(() => {
+      if (requestId !== transitionRequestRef.current) return;
+      setPrevious(currentIndexRef.current);
+      setIsCurrentImageLoaded(false);
+      currentIndexRef.current = nextIndex;
+      setCurrent(nextIndex);
+    }).catch(() => undefined);
+  };
+
   const goToPrevious = () => {
-    setCurrent((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+    transitionToSlide((currentIndexRef.current - 1 + slides.length) % slides.length);
     resetControlsTimeout();
   };
 
   const goToNext = () => {
-    setCurrent((prev) => (prev + 1) % slides.length);
+    transitionToSlide((currentIndexRef.current + 1) % slides.length);
     resetControlsTimeout();
   };
 
@@ -136,11 +174,15 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
   // Auto-slide timer
   useEffect(() => {
     const interval = window.setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
-    }, 7000);
+      transitionToSlide((currentIndexRef.current + 1) % slides.length);
+    }, HERO_SLIDE_INTERVAL_MS);
 
     return () => window.clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    void preloadHeroImage((current + 1) % slides.length).catch(() => undefined);
+  }, [current]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -166,7 +208,7 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
   return (
     <section 
       ref={sectionRef}
-      className="relative h-[100dvh] w-full overflow-hidden fade-slide select-none"
+      className="relative h-[100dvh] w-full overflow-hidden bg-[#12070a] fade-slide select-none"
       onMouseMove={handleMouseMove}
       onTouchStart={handleTouchStart}
       onTouchStartCapture={handleTouchStartSwipe}
@@ -184,6 +226,8 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
           }
           
           .hero-image-container img {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -193,6 +237,17 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
             -webkit-backface-visibility: hidden;
             transform: translateZ(0);
             -webkit-transform: translateZ(0);
+          }
+
+          @keyframes hero-image-pan {
+            from { object-position: left center; }
+            to { object-position: right center; }
+          }
+
+          @media (max-width: 767px) {
+            .hero-mobile-pan {
+              animation: hero-image-pan ${HERO_SLIDE_INTERVAL_MS}ms linear forwards;
+            }
           }
           
           .hero-image-container,
@@ -294,11 +349,30 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
       {/* Image container with hardware acceleration */}
       <div className="hero-image-wrapper">
         <div className="hero-image-container">
+          {previous !== null && (
+            <img
+              src={slides[previous].image}
+              alt=""
+              aria-hidden="true"
+              className="h-full w-full object-cover transition-opacity duration-1000"
+              style={{ opacity: isCurrentImageLoaded ? 0 : 1 }}
+              draggable="false"
+            />
+          )}
           <img 
+            key={current}
             src={slide.image} 
             alt={slide.title}
-            className="h-full w-full object-cover transition-opacity duration-1000"
+            className="hero-mobile-pan h-full w-full object-cover transition-opacity duration-1000"
+            style={{ opacity: isCurrentImageLoaded ? 1 : 0 }}
             loading="eager"
+            decoding="async"
+            onLoad={() => setIsCurrentImageLoaded(true)}
+            onTransitionEnd={(event) => {
+              if (event.propertyName === "opacity" && isCurrentImageLoaded) {
+                setPrevious(null);
+              }
+            }}
             draggable="false"
           />
         </div>
@@ -330,23 +404,27 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
       </button>
 
       {/* Content - positioned towards bottom with flex-end */}
-      <div className="hero-content relative z-10 flex h-full flex-col justify-end px-3 sm:px-4 pb-20 sm:pb-24 md:pb-28 lg:px-8">
+      <div className="hero-content relative z-10 flex h-full flex-col justify-end px-3 sm:px-4 pb-20 sm:pb-24 md:pb-28 lg:px-8 lg:pb-[5.5rem]">
         <div className="mx-auto w-full max-w-5xl text-center">
           <h1 
-            className="hero-title font-heading text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-semibold tracking-tight text-white leading-tight md:leading-tight slide-right"
+            className="hero-title font-heading text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-semibold tracking-tight text-white leading-[1.4] md:leading-[1.45] lg:leading-[1.45] slide-right"
             style={{
               textShadow: '0 2px 30px rgba(92,1,32,0.5), 0 4px 50px rgba(92,1,32,0.35), 0 8px 70px rgba(0,0,0,0.4), 0 12px 90px rgba(0,0,0,0.2)'
             }}
           >
-            {slide.title}
+            <span className="rounded-full bg-black/30 px-2 py-0 leading-tight backdrop-blur-sm [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">
+              {slide.title}
+            </span>
           </h1>
           <p 
-            className="hero-subtitle mx-auto mt-3 sm:mt-4 max-w-2xl text-xs sm:text-sm md:text-base lg:text-lg leading-6 sm:leading-7 md:leading-8 text-white/95 slide-right"
+            className="hero-subtitle mx-auto mt-3 sm:mt-4 max-w-2xl text-center text-xs sm:text-sm md:text-base lg:text-lg leading-6 sm:leading-7 md:leading-8 lg:leading-8 text-white/95 slide-right"
             style={{
               textShadow: '0 2px 20px rgba(92,1,32,0.4), 0 4px 30px rgba(92,1,32,0.25), 0 6px 40px rgba(0,0,0,0.3)'
             }}
           >
-            {slide.subtitle}
+            <span className="rounded-full border border-white/10 bg-black/30 px-2 py-0.5 backdrop-blur-sm lg:leading-7 [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">
+              {slide.subtitle}
+            </span>
           </p>
 
           {/* Location link for slide 5 - shown only on the office slide */}
@@ -372,13 +450,13 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
           )}
 
           {/* CTA Buttons */}
-          <div className="hero-buttons mt-4 sm:mt-6 md:mt-8 flex flex-col items-center justify-center gap-2 sm:gap-3 md:gap-4 sm:flex-row scale-reveal">
+          <div className="hero-buttons mt-2 sm:mt-3 md:mt-4 flex flex-col items-center justify-center gap-2 sm:gap-3 md:gap-4 sm:flex-row scale-reveal">
             {onBookNow ? (
-              <Button onClick={onBookNow} size="lg" className="bg-[#5C0120] text-white hover:bg-[#4a0019] px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 text-xs sm:text-sm md:text-base shadow-lg hover:shadow-xl transition-all min-w-[100px] sm:min-w-[140px] md:min-w-[160px] h-auto">
+              <Button onClick={onBookNow} size="lg" className="w-[90%] sm:w-auto bg-[#5C0120] text-white hover:bg-[#4a0019] px-4 sm:px-6 md:px-9 py-3 sm:py-4 md:py-4 text-xs sm:text-sm md:text-base shadow-lg hover:shadow-xl transition-all min-w-[100px] sm:min-w-[140px] md:min-w-[180px] h-auto">
                 Book Now
               </Button>
             ) : (
-              <Button asChild size="lg" className="bg-[#5C0120] text-white hover:bg-[#4a0019] px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 text-xs sm:text-sm md:text-base shadow-lg hover:shadow-xl transition-all min-w-[100px] sm:min-w-[140px] md:min-w-[160px] h-auto">
+              <Button asChild size="lg" className="w-[90%] sm:w-auto bg-[#5C0120] text-white hover:bg-[#4a0019] px-4 sm:px-6 md:px-9 py-3 sm:py-4 md:py-4 text-xs sm:text-sm md:text-base shadow-lg hover:shadow-xl transition-all min-w-[100px] sm:min-w-[140px] md:min-w-[180px] h-auto">
                 <Link to="/booking">Book Now</Link>
               </Button>
             )}
@@ -386,14 +464,14 @@ const HeroSection = ({ onBookNow }: HeroSectionProps) => {
               asChild 
               variant="outline" 
               size="lg" 
-              className="border-[#5C0120] bg-white text-[#5C0120] hover:bg-[#5C0120] hover:text-white hover:border-[#5C0120] px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 text-xs sm:text-sm md:text-base shadow-lg hover:shadow-xl transition-all duration-300 min-w-[100px] sm:min-w-[140px] md:min-w-[160px] h-auto"
+              className="w-[90%] sm:w-auto border-[#5C0120] bg-white text-[#5C0120] hover:bg-[#5C0120] hover:text-white hover:border-[#5C0120] px-4 sm:px-6 md:px-9 py-3 sm:py-4 md:py-4 text-xs sm:text-sm md:text-base shadow-lg hover:shadow-xl transition-all duration-300 min-w-[100px] sm:min-w-[140px] md:min-w-[180px] h-auto"
             >
               <Link to="/contact">Contact</Link>
             </Button>
           </div>
 
           {/* Slide indicator dots */}
-          <div className="hero-dots mt-4 sm:mt-6 md:mt-8 lg:mt-10 flex justify-center gap-1.5 sm:gap-2 md:gap-3">
+          <div className="hero-dots mt-2 sm:mt-3 md:mt-4 lg:mt-5 flex justify-center gap-1.5 sm:gap-2 md:gap-3">
             {slides.map((_, index) => (
               <button
                 key={index}
