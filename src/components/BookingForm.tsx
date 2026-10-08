@@ -33,8 +33,12 @@ const BookingForm = () => {
   useEffect(() => {
     if (!packageId && packages?.length) {
       const searchPackageId = searchParams.get("packageId");
+      const requestedType = searchParams.get("type");
+      const typePackages = requestedType
+        ? packages.filter((pkg) => pkg.type === requestedType)
+        : packages;
       const foundPackage = searchPackageId && packages.some((pkg) => String(pkg.id) === searchPackageId);
-      setPackageId(foundPackage ? searchPackageId : String(packages[0].id));
+      setPackageId(foundPackage ? searchPackageId : String(typePackages[0]?.id ?? packages[0].id));
     }
   }, [packages, packageId, searchParams]);
 
@@ -305,6 +309,18 @@ const BookingForm = () => {
                     <div>
                       <p className="text-xs text-muted-foreground">Payment</p>
                       <p className="font-medium">{paymentPreference}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Journey</p>
+                      <p className="font-medium capitalize">{selectedPackage?.type || "Not selected"}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Departure</p>
+                      <p className="font-medium">
+                        {selectedPackage?.start_date
+                          ? new Date(`${selectedPackage.start_date}T00:00:00`).toLocaleDateString("en", { month: "long", year: "numeric" })
+                          : "To be confirmed"}
+                      </p>
                     </div>
                   </div>
                   <div className="text-xs text-muted-foreground">Estimated cost</div>
